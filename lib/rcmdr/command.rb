@@ -3,12 +3,16 @@
 require_relative 'command_help'
 require_relative 'subcommand'
 
+# frozen_string_literal: true
+
 module Rcmdr
   # https://www.toptal.com/ruby/ruby-dsl-metaprogramming-guide
   module Command
     class << self
       def included(base)
         base.extend ClassMethods
+        raise NoClassNameError if base.name.blank?
+
         base.engine.command_namespace to_command_namespace_symbol base.name
         base.engine.command_prompt base.engine.command_namespace
         base.singleton_class.delegate :command_namespace, :command_namespaces, :commands,
@@ -19,7 +23,9 @@ module Rcmdr
       private
 
       def to_command_namespace_symbol(namespace, join_token: '_')
-        namespace.delete(':').split(/(?=[A-Z])/).join(join_token).downcase
+        return namespace if namespace.is_a? Symbol
+
+        namespace.delete(':').split(/(?=[A-Z])/).join(join_token).downcase.to_sym
       end
     end
 
@@ -60,6 +66,7 @@ module Rcmdr
           command_parent ||= @owning_command
           subcommand = subcommand.command_subcommand_create command_parent: command_parent
           commands[command_namespace] ||= {}
+          binding.pry
           subcommand.command_namespaces.each_with_index do |namespace, index|
             next if index.zero?
 
@@ -68,6 +75,20 @@ module Rcmdr
             target[namespace] ||= {}
           end
           commands.dig(*subcommand.command_namespaces[0..])[subcommand.command_namespaces.last] = subcommand
+
+          # subcommand.commands.each do |command_namespace, command|
+          #   command.each do |subcommand_command, data|
+          #     commands[self.command_namespace][command_namespace] ||= {}
+          #     commands[self.command_namespace][command_namespace][subcommand_command] = {
+          #       desc: data[:desc],
+          #       long_desc: data[:long_desc],
+          #       options: data[:options],
+          #       commands: data[:commands],
+          #       help: command_help_for(command: subcommand_command, namespaces: subcommand.command_namespaces, desc: data[:desc],
+          #         long_desc: data[:long_desc], options: data[:options], commands: data[:commands])
+          #     }
+          #   end
+          # end
         end
 
         def command_namespaces(namespaces = [])
