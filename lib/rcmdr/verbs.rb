@@ -4,7 +4,7 @@ require_relative 'errors/invalid_verb_error'
 
 module Rcmdr
   module Verbs
-    VERBS = %i[delete get post put patch].freeze
+    VERBS = %i[get post put patch delete].freeze
 
     module_function
 
