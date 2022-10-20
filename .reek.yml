@@ -3,6 +3,8 @@ exclude_paths:
   - spec
   - scratch*.rb
   - snippets*.rb
+  - lib/rcmdr/command*.rb
+  - lib/rcmdr/*command.rb
 detectors:
   # TooManyInstanceVariables:
   #  exclude:

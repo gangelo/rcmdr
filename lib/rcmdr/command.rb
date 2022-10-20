@@ -65,16 +65,16 @@ module Rcmdr
         def command_subcommand_add(subcommand, command_parent: nil)
           command_parent ||= @owning_command
           subcommand = subcommand.command_subcommand_create command_parent: command_parent
-          commands[command_namespace] ||= {}
-          binding.pry
-          subcommand.command_namespaces.each_with_index do |namespace, index|
-            next if index.zero?
 
-            target = commands.dig(*subcommand.command_namespaces[1..index])
-            target ||= commands.dig(*subcommand.command_namespaces[0..index - 1])
-            target[namespace] ||= {}
-          end
-          commands.dig(*subcommand.command_namespaces[0..])[subcommand.command_namespaces.last] = subcommand
+          commands.default_proc = proc { |h, k| h[k] = h.dup.clear }
+          # TODO: Add the values.
+          subcommand_namespace = subcommand.command_namespaces.last
+          commands.dig(*subcommand.command_namespaces[0...-1])[subcommand_namespace] = subcommand
+          # commands.dig(*subcommand.command_namespaces[0..]).tap do |hash|
+          #   binding.pry
+          #   hash[subcommand.command_namespaces.last] = subcommand
+          # end
+          commands.default_proc = nil
 
           # subcommand.commands.each do |command_namespace, command|
           #   command.each do |subcommand_command, data|

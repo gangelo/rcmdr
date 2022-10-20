@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/string/inflections'
 require 'pry-byebug'
 require 'simplecov'
 
@@ -10,6 +11,8 @@ SimpleCov.start do
 end
 
 require 'rcmdr'
+
+Dir[File.join(Dir.pwd, 'spec/support/**/*.rb')].each { |f| require f }
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

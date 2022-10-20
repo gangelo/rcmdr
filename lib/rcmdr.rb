@@ -2,8 +2,15 @@
 
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/module/delegation'
-require_relative 'rcmdr/command_help'
-require_relative 'rcmdr/command'
+require 'active_support/core_ext/string/inflections'
+
+require_relative 'rcmdr/actions'
+require_relative 'rcmdr/application'
+require_relative 'rcmdr/routes'
+# require_relative 'rcmdr/command_help'
+# require_relative 'rcmdr/command'
 require_relative 'rcmdr/errors'
-require_relative 'rcmdr/subcommand'
+# require_relative 'rcmdr/subcommand'
+require_relative 'rcmdr/support'
+require_relative 'rcmdr/verbs'
 require_relative 'rcmdr/version'

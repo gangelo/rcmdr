@@ -35,6 +35,7 @@ module Rcmdr
       command_parent&.command_namespaces(namespaces)
 
       namespaces << command_namespace
+      puts "#{command_namespace}: command_namespaces: #{namespaces}"
       namespaces
     end
   end
