@@ -86,5 +86,25 @@ RSpec.describe Rcmdr::Support::RouteHelpers do
         it_behaves_like 'the correct helper path is generated'
       end
     end
+
+    context 'with an unrecognized verb' do
+      let(:verb) { :very_bad_verb }
+      let(:action) { :index }
+      let(:expected_helper_path) { "will never reach me" }
+
+      it 'raises an error' do
+        expect { helper_path_for }.to raise_error Rcmdr::Errors::InvalidVerbError
+      end
+    end
+
+    context 'with an unrecognized action' do
+      let(:verb) { :get }
+      let(:action) { :very_bad_action }
+      let(:expected_helper_path) { "will never reach me" }
+
+      it 'raises an error' do
+        expect { helper_path_for }.to raise_error Rcmdr::Errors::InvalidActionError
+      end
+    end
   end
 end
