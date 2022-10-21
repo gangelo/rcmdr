@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   DESC
   spec.homepage = 'https://github.com/gangelo/rcmdr'
   spec.license = 'MIT'
-  spec.required_ruby_version = '>= 3.0.1'
+  spec.required_ruby_version = Gem::Requirement.new(["~> 3.0"], [">= 3.1.2"])
 
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
 
@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activesupport', '~> 7.0', '>= 7.0.4'
-  spec.add_dependency 'deco_lite', '~> 1.3'
+  spec.add_dependency 'deco_lite', '~> 1.0'
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
