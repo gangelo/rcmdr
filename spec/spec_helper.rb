@@ -4,8 +4,6 @@ require 'active_support/core_ext/string/inflections'
 require 'pry-byebug'
 require 'simplecov'
 
-SimpleCov.start
-
 SimpleCov.start do
   add_filter 'spec'
 end
