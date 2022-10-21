@@ -15,6 +15,7 @@ AllCops:
     - 'vendor/**/*'
     - 'scratch*.rb'
     - 'snippets*.rb'
+    - '/**/*command*.rb'
 
 # Align the elements of a hash literal if they span more than one line.
 Layout/HashAlignment:

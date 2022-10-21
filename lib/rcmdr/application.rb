@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'routes'
+require_relative 'routing/routes'
 
 module Rcmdr
   # This class represents an rcmdr application.
@@ -8,7 +8,7 @@ module Rcmdr
     attr_reader :routes
 
     def initialize
-      self.routes = Routes.new
+      self.routes = Routing::Routes.new
     end
 
     private

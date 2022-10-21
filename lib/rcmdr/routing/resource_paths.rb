@@ -3,27 +3,21 @@
 require_relative '../errors/invalid_action_error'
 
 module Rcmdr
-  module Support
+  module Routing
     # This module provides methods for constructing resource
     # paths given a resource and a controller action.
     module ResourcePaths
       module_function
 
       def resource_path_for(resource, action:)
-        case action
-        when :create
+        case
+        when action == :create || action == :index
           "/#{resource}"
-        when :destroy
-          "/#{resource}/:id"
-        when :edit
+        when action == :edit
           "/#{resource}/:id/edit"
-        when :index
-          "/#{resource}"
-        when :new
+        when action == :new
           "/#{resource}/new"
-        when :show
-          "/#{resource}/:id"
-        when :update
+        when %i[destroy show update].include?(action)
           "/#{resource}/:id"
         else
           raise Rcmdr::Errors::InvalidActionError.new(action: action)

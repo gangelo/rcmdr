@@ -1,21 +1,45 @@
 # frozen_string_literal: true
+
 RSpec.shared_examples 'the correct helper path is generated' do
-  it "generates the expected helper path" do
+  it 'generates the expected helper path' do
     expect(helper_path_for).to eq expected_helper_path
   end
 end
 
 RSpec.shared_examples 'the correct helper url is generated' do
-  it "generates the expected helper url" do
+  it 'generates the expected helper url' do
     expect(helper_url_for).to eq expected_helper_url
   end
 end
 
-RSpec.describe Rcmdr::Support::RouteHelpers do
+RSpec.shared_examples 'the correct url is generated' do
+  it 'generates the expected url' do
+    expect(url_for).to eq expected_url
+  end
+end
+
+RSpec.describe Rcmdr::Routing::RouteHelpers do
   subject(:route_helpers) { described_class }
 
   let(:resource_or_as) { :photos }
   let(:resource_or_as_singular) { resource_or_as.to_s.singularize }
+
+  describe '.helper_url_for' do
+    subject(:helper_url_for) do
+      route_helpers.helper_url_for(verb: verb, resource_or_as: resource_or_as, action: action)
+    end
+
+    context 'with verb :get' do
+      let(:verb) { :get }
+
+      context 'with action :index' do
+        let(:action) { :index }
+        let(:expected_helper_url) { "#{resource_or_as}_url" }
+
+        it_behaves_like 'the correct helper url is generated'
+      end
+    end
+  end
 
   describe '.helper_path_for' do
     subject(:helper_path_for) do
@@ -90,7 +114,7 @@ RSpec.describe Rcmdr::Support::RouteHelpers do
     context 'with an unrecognized verb' do
       let(:verb) { :very_bad_verb }
       let(:action) { :index }
-      let(:expected_helper_path) { "will never reach me" }
+      let(:expected_helper_path) { 'will never reach me' }
 
       it 'raises an error' do
         expect { helper_path_for }.to raise_error Rcmdr::Errors::InvalidVerbError
@@ -100,11 +124,27 @@ RSpec.describe Rcmdr::Support::RouteHelpers do
     context 'with an unrecognized action' do
       let(:verb) { :get }
       let(:action) { :very_bad_action }
-      let(:expected_helper_path) { "will never reach me" }
+      let(:expected_helper_path) { 'will never reach me' }
 
       it 'raises an error' do
         expect { helper_path_for }.to raise_error Rcmdr::Errors::InvalidActionError
       end
     end
+  end
+
+  describe '.url_for' do
+    subject(:url_for) do
+      route_helpers.url_for(host: host, path: path, scheme: scheme, port: port)
+    end
+
+    let(:scheme) { 'rcmdr' }
+    let(:host) { 'app' }
+    let(:path) { 'phones' }
+    let(:port) { 3000 }
+    let(:expected_url) do
+      URI.join("#{scheme}://#{host}:#{port}/", path).to_s
+    end
+
+    it_behaves_like 'the correct url is generated'
   end
 end

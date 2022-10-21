@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Rcmdr::Routes do
+RSpec.describe Rcmdr::Routing::Routes do
   describe 'instance methods' do
     it { is_expected.to respond_to :draw }
 
@@ -19,11 +19,11 @@ RSpec.describe Rcmdr::Routes do
         let(:expected_routes) do
           empty_verbs_hash.merge(
             {
-              get: { '/get': { to: 'controller#index', as: :list } },
-              delete: { '/delete': { to: 'controller#delete', as: :delete } },
-              patch: { '/put': { to: 'controller#patch', as: :patch } },
-              post: { '/post': { to: 'controller#post', as: :post } },
-              put: { '/put': { to: 'controller#put', as: :put } }
+              get: { '/get' => { to: 'controller#index' } },
+              delete: { '/delete' => { to: 'controller#delete' } },
+              patch: { '/put' => { to: 'controller#patch' } },
+              post: { '/post' => { to: 'controller#post' } },
+              put: { '/put' => { to: 'controller#put' } }
             }
           )
         end
@@ -49,31 +49,36 @@ RSpec.describe Rcmdr::Routes do
         let(:expected_routes) do
           {
             delete: {
-              '/photos/:id': {
+              '/photos/:id' => {
                 to: 'photos#destroy'
               }
             },
             get: {
-              '/photos/:id/edit': {
+              '/photos/:id/edit' => {
                 to: 'photos#edit'
               },
-              '/photos': {
+              '/photos' => {
                 to: 'photos#index'
               },
-              '/photos/new': {
+              '/photos/new' => {
                 to: 'photos#new'
               },
-              '/photos/:id': {
+              '/photos/:id' => {
                 to: 'photos#show'
               }
             },
             post: {
-              '/photos': {
+              '/photos' =>{
                 to: 'photos#create'
               }
             },
+            patch: {
+              '/photos/:id' => {
+                to: 'photos#update'
+              }
+            },
             put: {
-              '/photos/:id': {
+              '/photos/:id' => {
                 to: 'photos#update'
               }
             }
