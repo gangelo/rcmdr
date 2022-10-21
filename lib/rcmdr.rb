@@ -4,6 +4,9 @@ require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/module/delegation'
 require 'active_support/core_ext/string/inflections'
 
+# 3rd-party
+require_relative 'rcmdr/3rd-party/URI/rcmdr'
+
 # Errors
 require_relative 'rcmdr/errors/invalid_action_error'
 require_relative 'rcmdr/errors/invalid_verb_error'
@@ -20,9 +23,6 @@ require_relative 'rcmdr/routing/resource_paths'
 require_relative 'rcmdr/routing/route_verbs'
 require_relative 'rcmdr/routing/routes'
 require_relative 'rcmdr/routing/verbs'
-
-# URI
-require_relative 'rcmdr/URI/rcmdr'
 
 require_relative 'rcmdr/application'
 require_relative 'rcmdr/cli'
