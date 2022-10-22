@@ -10,17 +10,16 @@ module Rcmdr
       module_function
 
       def verbs_for(action:)
-        case
-        when action == :create
+        if action == :create
           [:post]
-        when action == :destroy
+        elsif action == :destroy
           [:delete]
-        when action == :update
+        elsif action == :update
           %i[put patch]
-        when %i[edit index new show].include?(action)
+        elsif %i[edit index new show].include?(action)
           [:get]
         else
-          raise Errors::InvalidActionError.new(action: action)
+          raise Errors::InvalidActionError.new(action:)
         end
       end
     end

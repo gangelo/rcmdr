@@ -14,7 +14,7 @@ module Rcmdr
       end
 
       def validate_verb!(verb)
-        raise Errors::InvalidVerbError.new(verb: verb) unless verb_valid? verb
+        raise Errors::InvalidVerbError.new(verb:) unless verb_valid? verb
       end
     end
   end

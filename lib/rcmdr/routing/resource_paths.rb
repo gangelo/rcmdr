@@ -10,17 +10,16 @@ module Rcmdr
       module_function
 
       def resource_path_for(resource, action:)
-        case
-        when action == :create || action == :index
+        if %i[create index].include?(action)
           "/#{resource}"
-        when action == :edit
+        elsif action == :edit
           "/#{resource}/:id/edit"
-        when action == :new
+        elsif action == :new
           "/#{resource}/new"
-        when %i[destroy show update].include?(action)
+        elsif %i[destroy show update].include?(action)
           "/#{resource}/:id"
         else
-          raise Rcmdr::Errors::InvalidActionError.new(action: action)
+          raise Rcmdr::Errors::InvalidActionError.new(action:)
         end
       end
     end

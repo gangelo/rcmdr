@@ -1,10 +1,17 @@
 # frozen_string_literal: true
 
+# rubocop: disable Style/StringHashKeys
 RSpec.describe Rcmdr::Routing::Routes do
   describe 'instance methods' do
     it { is_expected.to respond_to :draw }
 
     describe '#draw' do
+      context 'when no &block is given' do
+        it 'raises an error' do
+          expect { described_class.new.draw }.to raise_error Rcmdr::Errors::NoBlockError
+        end
+      end
+
       context 'when a &block is given' do
         subject(:routes) do
           described_class.new.draw do
@@ -33,62 +40,82 @@ RSpec.describe Rcmdr::Routing::Routes do
         end
       end
 
-      context 'when no &block is given' do
-        it 'raises an error' do
-          expect { described_class.new.draw }.to raise_error Rcmdr::Errors::NoBlockError
-        end
-      end
-
-      describe '#resources' do
+      describe '#draw' do
         subject(:routes) do
           described_class.new.draw do
             resources :photos
           end
         end
 
-        let(:expected_routes) do
-          {
-            delete: {
-              '/photos/:id' => {
-                to: 'photos#destroy'
-              }
-            },
-            get: {
-              '/photos/:id/edit' => {
-                to: 'photos#edit'
+        context 'routes' do
+          let(:expected_routes) do
+            {
+              delete: {
+                '/photos/:id' => {
+                  to: 'photos#destroy'
+                }
               },
-              '/photos' => {
-                to: 'photos#index'
+              get: {
+                '/photos/:id/edit' => {
+                  to: 'photos#edit'
+                },
+                '/photos' => {
+                  to: 'photos#index'
+                },
+                '/photos/new' => {
+                  to: 'photos#new'
+                },
+                '/photos/:id' => {
+                  to: 'photos#show'
+                }
               },
-              '/photos/new' => {
-                to: 'photos#new'
+              post: {
+                '/photos' => {
+                  to: 'photos#create'
+                }
               },
-              '/photos/:id' => {
-                to: 'photos#show'
-              }
-            },
-            post: {
-              '/photos' =>{
-                to: 'photos#create'
-              }
-            },
-            patch: {
-              '/photos/:id' => {
-                to: 'photos#update'
-              }
-            },
-            put: {
-              '/photos/:id' => {
-                to: 'photos#update'
+              patch: {
+                '/photos/:id' => {
+                  to: 'photos#update'
+                }
+              },
+              put: {
+                '/photos/:id' => {
+                  to: 'photos#update'
+                }
               }
             }
-          }
+          end
+
+          it 'draws the routes' do
+            expect(routes.routes).to match expected_routes
+          end
         end
 
-        it 'draws the routes' do
-          expect(routes.routes).to match expected_routes
+        context 'paths' do
+          subject(:routes) do
+            described_class.new.draw do
+              get '/users', to: 'users#index', as: :users_list
+              get '/car/engines', to: 'cars_engines#index'
+              get '/cars/engines', to: 'cars_engines#index'
+              get '/truck/:id/edit', to: 'trucks#edit'
+            end
+          end
+
+          let(:expected_paths) do
+            {
+              'users_list_path' => '/users',
+              'car_engines_path' => '/car/engines',
+              'cars_engines_path' => '/cars/engines',
+            }
+          end
+
+          it 'generates the paths' do
+            expect(routes.paths).to eq expected_paths
+          end
         end
       end
     end
   end
 end
+# rubocop: enable Style/StringHashKeys

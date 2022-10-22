@@ -2,13 +2,13 @@
 
 RSpec.shared_examples 'the correct helper path is generated' do
   it 'generates the expected helper path' do
-    expect(helper_path_for).to eq expected_helper_path
+    expect(resource_helper_path_for).to eq expected_helper_path
   end
 end
 
 RSpec.shared_examples 'the correct helper url is generated' do
   it 'generates the expected helper url' do
-    expect(helper_url_for).to eq expected_helper_url
+    expect(resource_helper_url_for).to eq expected_helper_url
   end
 end
 
@@ -18,15 +18,15 @@ RSpec.shared_examples 'the correct url is generated' do
   end
 end
 
-RSpec.describe Rcmdr::Routing::RouteHelpers do
-  subject(:route_helpers) { described_class }
+RSpec.describe Rcmdr::Routing::ResourceHelpers do
+  subject(:resource_helpers) { described_class }
 
-  let(:resource_or_as) { :photos }
-  let(:resource_or_as_singular) { resource_or_as.to_s.singularize }
+  let(:resource) { :photos }
+  let(:resource_singular) { resource.to_s.singularize }
 
-  describe '.helper_url_for' do
-    subject(:helper_url_for) do
-      route_helpers.helper_url_for(verb: verb, resource_or_as: resource_or_as, action: action)
+  describe '.resource_helper_url_for' do
+    subject(:resource_helper_url_for) do
+      resource_helpers.resource_helper_url_for(verb:, resource:, action:)
     end
 
     context 'with verb :get' do
@@ -34,16 +34,16 @@ RSpec.describe Rcmdr::Routing::RouteHelpers do
 
       context 'with action :index' do
         let(:action) { :index }
-        let(:expected_helper_url) { "#{resource_or_as}_url" }
+        let(:expected_helper_url) { "#{resource}_url" }
 
         it_behaves_like 'the correct helper url is generated'
       end
     end
   end
 
-  describe '.helper_path_for' do
-    subject(:helper_path_for) do
-      route_helpers.helper_path_for(verb: verb, resource_or_as: resource_or_as, action: action)
+  describe '.resource_helper_path_for' do
+    subject(:resource_helper_path_for) do
+      resource_helpers.resource_helper_path_for(verb:, resource:, action:)
     end
 
     context 'with verb :get' do
@@ -51,28 +51,28 @@ RSpec.describe Rcmdr::Routing::RouteHelpers do
 
       context 'with action :index' do
         let(:action) { :index }
-        let(:expected_helper_path) { "#{resource_or_as}_path" }
+        let(:expected_helper_path) { "#{resource}_path" }
 
         it_behaves_like 'the correct helper path is generated'
       end
 
       context 'with action :new' do
         let(:action) { :new }
-        let(:expected_helper_path) { "new_#{resource_or_as_singular}_path" }
+        let(:expected_helper_path) { "new_#{resource_singular}_path" }
 
         it_behaves_like 'the correct helper path is generated'
       end
 
       context 'with action :edit' do
         let(:action) { :edit }
-        let(:expected_helper_path) { "edit_#{resource_or_as_singular}_path" }
+        let(:expected_helper_path) { "edit_#{resource_singular}_path" }
 
         it_behaves_like 'the correct helper path is generated'
       end
 
       context 'with action :show' do
         let(:action) { :show }
-        let(:expected_helper_path) { "show_#{resource_or_as_singular}_path" }
+        let(:expected_helper_path) { "show_#{resource_singular}_path" }
 
         it_behaves_like 'the correct helper path is generated'
       end
@@ -83,7 +83,7 @@ RSpec.describe Rcmdr::Routing::RouteHelpers do
 
       context 'with action :create' do
         let(:action) { :create }
-        let(:expected_helper_path) { "#{resource_or_as}_path" }
+        let(:expected_helper_path) { "#{resource}_path" }
 
         it_behaves_like 'the correct helper path is generated'
       end
@@ -94,7 +94,7 @@ RSpec.describe Rcmdr::Routing::RouteHelpers do
 
       context 'with action :update' do
         let(:action) { :update }
-        let(:expected_helper_path) { "#{resource_or_as_singular}_path" }
+        let(:expected_helper_path) { "#{resource_singular}_path" }
 
         it_behaves_like 'the correct helper path is generated'
       end
@@ -105,7 +105,7 @@ RSpec.describe Rcmdr::Routing::RouteHelpers do
 
       context 'with action :update' do
         let(:action) { :destroy }
-        let(:expected_helper_path) { "#{resource_or_as_singular}_path" }
+        let(:expected_helper_path) { "#{resource_singular}_path" }
 
         it_behaves_like 'the correct helper path is generated'
       end
@@ -117,7 +117,7 @@ RSpec.describe Rcmdr::Routing::RouteHelpers do
       let(:expected_helper_path) { 'will never reach me' }
 
       it 'raises an error' do
-        expect { helper_path_for }.to raise_error Rcmdr::Errors::InvalidVerbError
+        expect { resource_helper_path_for }.to raise_error Rcmdr::Errors::InvalidVerbError
       end
     end
 
@@ -127,14 +127,14 @@ RSpec.describe Rcmdr::Routing::RouteHelpers do
       let(:expected_helper_path) { 'will never reach me' }
 
       it 'raises an error' do
-        expect { helper_path_for }.to raise_error Rcmdr::Errors::InvalidActionError
+        expect { resource_helper_path_for }.to raise_error Rcmdr::Errors::InvalidActionError
       end
     end
   end
 
   describe '.url_for' do
     subject(:url_for) do
-      route_helpers.url_for(host: host, path: path, scheme: scheme, port: port)
+      resource_helpers.url_for(host:, path:, scheme:, port:)
     end
 
     let(:scheme) { 'rcmdr' }

@@ -2,6 +2,8 @@
 
 require_relative 'actions'
 require_relative 'resource_paths'
+require_relative 'resource_helpers'
+require_relative 'route_helpers'
 require_relative 'route_verbs'
 require_relative 'verbs'
 
@@ -12,6 +14,8 @@ module Rcmdr
     class Routes
       include Actions
       include ResourcePaths
+      include ResourceHelpers
+      include RouteHelpers
       include RouteVerbs
       include Verbs
 
@@ -40,11 +44,14 @@ module Rcmdr
         raise "#{resource} is not a Symbol" unless resource.is_a? Symbol
 
         only.each do |action|
-          route = resource_path_for resource, action: action
-          to = resource_controller_action_for resource, action: action
-          resource_path = resource_path(resource, action: action)
-          verbs = verbs_for(action: action)
-          verbs.each { |verb| send(verb, route, to: to) }
+          verbs_for(action:).each do |verb|
+            resource_path = resource_path_for resource, action: action
+            send(verb,
+              resource_path,
+              to: resource_controller_action_for(resource, action:))
+            #paths[resource_helper_path_for(verb:, resource: resource, action:)] = resource_path
+            #paths[route_helper_path_for(route:, verb:, as:)] = route
+          end
         end
       end
       alias resource resources
@@ -79,29 +86,19 @@ module Rcmdr
         routes[verb][route][:to] = options[:to]
         yield routes[verb][route] if block_given?
         routes[verb][route]
+
+        add_path(route:, as: options[:as])
       end
 
-      def resource_path(resource, action:)
-        resource = resource.to_s.singularize
+      def add_path(route:, as:)
+        path = route_helper_path_for(route:, as:)
+        return if path.nil? || paths[path].present?
 
-        case
-        when action == :create || action == :index
-          "#{resource}_path"
-        when :new
-          "new_#{resource.singularize}_path"
-        when :edit
-          "edit_#{resource.singularize}_path"
-        when :index
-          "/#{resource}"
-        when %i[destroy show update].include?(action)
-          "/#{resource}/:id"
-        else
-          raise Rcmdr::Errors::InvalidActionError.new(action: action)
-        end
+        paths[path] = route
       end
 
       def resource_controller_action_for(resource, action:)
-        raise Errors::InvalidActionError.new(action: action) unless ACTIONS.include? action
+        raise Errors::InvalidActionError.new(action:) unless ACTIONS.include? action
 
         "#{resource}##{action}"
       end

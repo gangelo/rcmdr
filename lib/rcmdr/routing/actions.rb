@@ -14,7 +14,7 @@ module Rcmdr
       end
 
       def validate_action!(action)
-        raise Errors::InvalidActionError.new(action: action) unless action_valid? action
+        raise Errors::InvalidActionError.new(action:) unless action_valid? action
       end
     end
   end

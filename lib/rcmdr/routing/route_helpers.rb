@@ -11,40 +11,32 @@ module Rcmdr
     module RouteHelpers
       module_function
 
-      def helper_path_for(verb:, resource_or_as:, action:)
-        helper_for verb: verb, resource_or_as: resource_or_as, action: action
+      def route_helper_path_for(route:, as:)
+        route_helper_for route:, as:
       end
 
-      def helper_url_for(verb:, resource_or_as:, action:)
-        helper_for(verb: verb, resource_or_as: resource_or_as, action: action, suffix: '_url')
+      def route_helper_url_for(route:, as:)
+        route_helper_for route:, as:, suffix: '_url'
       end
 
-      def helper_for(verb:, resource_or_as:, action:, suffix: '_path')
-        Rcmdr::Routing::Verbs.validate_verb! verb
-        Rcmdr::Routing::Actions.validate_action! action
+      # For example:
+      # get '/cars/engines', to: 'car_engines#index', as: car_engines_list
+      # => car_engines_list_path
+      #
+      # get '/cars/engines', to: 'car_engines#index'
+      # => cars_engines_path
+      def route_helper_for(route:, as:, suffix: '_path')
+        return "#{as}#{suffix}" if as.present?
 
-        resource_or_as = resource_or_as.to_s
+        path_tokens = route.split('/')
+        return if path_tokens.any? { |token| token =~ /:.*/ }
 
-        if %i[get post].include?(verb) && %i[index create].include?(action)
-          "#{resource_or_as}#{suffix}"
-        elsif verb == :get
-          case action
-          when :new
-            "new_#{resource_or_as.singularize}#{suffix}"
-          when :edit
-            "edit_#{resource_or_as.singularize}#{suffix}"
-          when :show
-            "show_#{resource_or_as.singularize}#{suffix}"
-          end
-        elsif (%i[patch put].include?(verb) && action == :update) ||
-              (verb == :delete && action == :destroy)
-          "#{resource_or_as.singularize}#{suffix}"
-        end
-      end
+        helper_path = path_tokens.filter_map do |path_token|
+          next if path_token.blank?
 
-      def url_for(host:, path:, scheme: 'rcmdr', port: nil)
-        port = ":#{port.to_s.delete_prefix(':')}" unless port.blank?
-        URI.join("#{scheme}://#{host}#{port}/", path).to_s
+          path_token = CGI.escape(path_token)
+        end.compact.join('_')
+        "#{helper_path}#{suffix}" if helper_path.present?
       end
     end
   end

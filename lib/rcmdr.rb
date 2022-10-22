@@ -15,7 +15,7 @@ require_relative 'rcmdr/errors/no_class_name_error'
 require_relative 'rcmdr/errors/required_options_error'
 
 # Helpers
-require_relative 'rcmdr/routing/route_helpers'
+require_relative 'rcmdr/routing/resource_helpers'
 
 # Routing
 require_relative 'rcmdr/routing/actions'
