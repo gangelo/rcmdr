@@ -9,18 +9,20 @@ require_relative 'rcmdr/3rd-party/URI/rcmdr'
 
 # Errors
 require_relative 'rcmdr/errors/invalid_action_error'
+require_relative 'rcmdr/errors/invalid_resource_error'
 require_relative 'rcmdr/errors/invalid_verb_error'
 require_relative 'rcmdr/errors/no_block_error'
 require_relative 'rcmdr/errors/no_class_name_error'
+require_relative 'rcmdr/errors/option_type_error'
 require_relative 'rcmdr/errors/required_options_error'
-
-# Helpers
-require_relative 'rcmdr/routing/resource_helpers'
+require_relative 'rcmdr/errors/unrecognized_option_error'
 
 # Routing
 require_relative 'rcmdr/routing/actions'
-require_relative 'rcmdr/routing/resource_paths'
-require_relative 'rcmdr/routing/route_verbs'
+require_relative 'rcmdr/routing/resource'
+require_relative 'rcmdr/routing/resources'
+require_relative 'rcmdr/routing/resource_mapper'
+require_relative 'rcmdr/routing/route'
 require_relative 'rcmdr/routing/routes'
 require_relative 'rcmdr/routing/verbs'
 

@@ -43,76 +43,71 @@ RSpec.describe Rcmdr::Routing::Routes do
       describe '#draw' do
         subject(:routes) do
           described_class.new.draw do
+            # root '/'
+
             resources :photos
+
+            # get '/users', to: 'users#index', as: :users_list
+            # get '/car/engines', to: 'cars_engines#index'
+            # get '/cars/engines', to: 'cars_engines#index'
+            # get '/truck/:id/edit', to: 'trucks#edit'
           end
         end
 
-        context 'routes' do
-          let(:expected_routes) do
-            {
-              delete: {
-                '/photos/:id' => {
-                  to: 'photos#destroy'
-                }
+        let(:expected_routes) do
+          {
+            delete: {
+              '/photos/:id' => {
+                to: 'photos#destroy'
+              }
+            },
+            get: {
+              '/photos/:id/edit' => {
+                to: 'photos#edit'
               },
-              get: {
-                '/photos/:id/edit' => {
-                  to: 'photos#edit'
-                },
-                '/photos' => {
-                  to: 'photos#index'
-                },
-                '/photos/new' => {
-                  to: 'photos#new'
-                },
-                '/photos/:id' => {
-                  to: 'photos#show'
-                }
+              '/photos' => {
+                to: 'photos#index'
               },
-              post: {
-                '/photos' => {
-                  to: 'photos#create'
-                }
+              '/photos/new' => {
+                to: 'photos#new'
               },
-              patch: {
-                '/photos/:id' => {
-                  to: 'photos#update'
-                }
-              },
-              put: {
-                '/photos/:id' => {
-                  to: 'photos#update'
-                }
+              '/photos/:id' => {
+                to: 'photos#show'
+              }
+            },
+            post: {
+              '/photos' => {
+                to: 'photos#create'
+              }
+            },
+            patch: {
+              '/photos/:id' => {
+                to: 'photos#update'
+              }
+            },
+            put: {
+              '/photos/:id' => {
+                to: 'photos#update'
               }
             }
-          end
-
-          it 'draws the routes' do
-            expect(routes.routes).to match expected_routes
-          end
+          }
         end
 
-        context 'paths' do
-          subject(:routes) do
-            described_class.new.draw do
-              get '/users', to: 'users#index', as: :users_list
-              get '/car/engines', to: 'cars_engines#index'
-              get '/cars/engines', to: 'cars_engines#index'
-              get '/truck/:id/edit', to: 'trucks#edit'
-            end
-          end
+        let(:expected_paths) do
+          {
+            'photos_path' => '/photos/index',
+            'new_photo_path' => '/photos/new',
+            'edit_photo_path' => '/photos/:id/edit',
+            'photo_path' => '/photos/:id'
+          }
+        end
 
-          let(:expected_paths) do
-            {
-              'users_list_path' => '/users',
-              'car_engines_path' => '/car/engines',
-              'cars_engines_path' => '/cars/engines',
-            }
-          end
+        it 'draws the routes' do
+          expect(routes.routes).to eq expected_routes
+        end
 
-          it 'generates the paths' do
-            expect(routes.paths).to eq expected_paths
-          end
+        it 'generates the paths' do
+          expect(routes.paths).to eq expected_paths
         end
       end
     end

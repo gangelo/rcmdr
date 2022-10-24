@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'actions'
-require_relative 'resource_paths'
-require_relative 'resource_helpers'
-require_relative 'route_helpers'
-require_relative 'route_verbs'
+require_relative 'resource'
+require_relative 'route'
 require_relative 'verbs'
 
 module Rcmdr
@@ -13,10 +11,6 @@ module Rcmdr
     # and creating/providing path and url helper methods.
     class Routes
       include Actions
-      include ResourcePaths
-      include ResourceHelpers
-      include RouteHelpers
-      include RouteVerbs
       include Verbs
 
       # Hash:
@@ -32,6 +26,8 @@ module Rcmdr
       def draw(&block)
         raise Errors::NoBlockError unless block
 
+        # TODO: Create a clean-room so that the block cannot execute
+        # arbitrary code.
         instance_eval(&block)
         self
       end
@@ -45,62 +41,65 @@ module Rcmdr
 
         only.each do |action|
           verbs_for(action:).each do |verb|
-            resource_path = resource_path_for resource, action: action
-            send(verb,
-              resource_path,
-              to: resource_controller_action_for(resource, action:))
-            #paths[resource_helper_path_for(verb:, resource: resource, action:)] = resource_path
-            #paths[route_helper_path_for(route:, verb:, as:)] = route
+            resource_info = Resources.new(resource, action:, verb:).info
+            add_route(resource_info.path, to: resource_info.controller_action, verb:)
+            helper_path = resource_info.helper_path
+            next if helper_path.nil? || paths[helper_path].present?
+
+            paths[helper_path] = resource_info.path
           end
         end
       end
       alias resource resources
 
+      def add_resource_path(route:, **options)
+      end
+
+      def root(route, **options)
+        get route, **options.merge({ to: :root })
+      end
+
       def delete(route, **options)
         add_route(route, **options.merge({ verb: :delete }))
+        add_route_path(route:, as: options[:as])
       end
 
       def get(route, **options)
         add_route(route, **options.merge({ verb: :get }))
+        add_route_path(route:, as: options[:as])
       end
 
       def post(route, **options)
         add_route(route, **options.merge({ verb: :post }))
+        add_route_path(route:, as: options[:as])
       end
 
       def patch(route, **options)
         add_route(route, **options.merge({ verb: :patch }))
+        add_route_path(route:, as: options[:as])
       end
 
       def put(route, **options)
         add_route(route, **options.merge({ verb: :put }))
+        add_route_path(route:, as: options[:as])
       end
 
       def add_route(route, **options)
-        missing_options = %i[verb to] - options.keys
-        raise RequiredOptionsError.new(options: missing_options) unless missing_options.blank?
+        missing_options = %i[verb] - options.keys
+        raise Errors::RequiredOptionsError.new(options: missing_options) unless missing_options.blank?
 
         verb = options[:verb]
 
         routes[verb][route] = {}
         routes[verb][route][:to] = options[:to]
-        yield routes[verb][route] if block_given?
         routes[verb][route]
-
-        add_path(route:, as: options[:as])
       end
 
-      def add_path(route:, as:)
-        path = route_helper_path_for(route:, as:)
-        return if path.nil? || paths[path].present?
+      def add_route_path(route:, as:)
+        helper_path = Route.new(route, as:).helper_path
+        return if helper_path.nil? || paths[helper_path].present?
 
-        paths[path] = route
-      end
-
-      def resource_controller_action_for(resource, action:)
-        raise Errors::InvalidActionError.new(action:) unless ACTIONS.include? action
-
-        "#{resource}##{action}"
+        paths[helper_path] = route
       end
     end
   end
