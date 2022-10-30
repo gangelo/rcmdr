@@ -6,7 +6,7 @@ module Rcmdr
     # is missing a class name.
     class NoClassNameError < StandardError
       def to_s
-       # '<class>#name is blank?'
+        # '<class>#name is blank?'
       end
     end
   end

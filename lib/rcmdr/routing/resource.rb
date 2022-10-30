@@ -8,22 +8,6 @@ module Rcmdr
     class Resource < Resources
       extend Rcmdr::Validators::ActionValidator
 
-      # class << self
-      #   def verbs_for(action:)
-      #     if action == :create
-      #       [:post]
-      #     elsif action == :destroy
-      #       [:delete]
-      #     elsif action == :update
-      #       %i[put patch]
-      #     elsif %i[edit new show].include?(action)
-      #       [:get]
-      #     else
-      #       validate_action! action
-      #     end
-      #   end
-      # end
-
       def path
         @path ||= if %i[new edit].include?(action)
           "/#{resource}/#{action}"

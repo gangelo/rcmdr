@@ -60,7 +60,7 @@ module Rcmdr
           "/#{resource_plural}/:id"
         end
       end
-      alias_method :path, :uri_pattern
+      alias path uri_pattern
 
       def controller_action
         @controller_action ||= if %i[index create].include?(action)

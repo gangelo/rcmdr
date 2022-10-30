@@ -87,7 +87,7 @@ module Rcmdr
       end
 
       def add_route(path, **options)
-        validate_required_options!(options: options.keys, required_options: %i[verb to]) unless options.blank?
+        validate_required_options!(options: options.keys, required_options: %i[verb to])
 
         verb = options[:verb]
         routes[verb][path] = {}

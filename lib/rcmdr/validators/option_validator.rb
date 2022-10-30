@@ -8,6 +8,7 @@ module Rcmdr
       include Rcmdr::Routing::Options
 
       def option_valid?(option, allowed_options: nil)
+        allowed_options = [allowed_options] unless allowed_options.is_a?(Array)
         (allowed_options || OPTIONS).include? option
       end
 
@@ -16,6 +17,8 @@ module Rcmdr
       # against OPTIONS. If any of the options: are unrecognized,
       # an error is raised.
       def validate_options!(options:, allowed_options: OPTIONS)
+        allowed_options = [allowed_options] unless allowed_options.is_a?(Array)
+
         unrecognized_options = options.filter_map do |option|
           next if option_valid?(option, allowed_options:)
 
@@ -33,6 +36,8 @@ module Rcmdr
       # against OPTIONS. If any of the options: are missing,
       # an error is raised.
       def validate_required_options!(options:, required_options: OPTIONS)
+        required_options = [required_options] unless required_options.is_a?(Array)
+
         missing_required_options = required_options - options
 
         if missing_required_options.present?

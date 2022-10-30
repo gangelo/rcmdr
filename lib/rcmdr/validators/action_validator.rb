@@ -6,7 +6,7 @@ module Rcmdr
   module Validators
     module ActionValidator
       class << self
-        def included(base)
+        def included(_base)
           include Rcmdr::Routing::Actions
         end
 

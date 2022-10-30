@@ -6,7 +6,7 @@ module Rcmdr
     # was expected.
     class NoBlockError < StandardError
       def to_s
-        #'A &block was expected, but no block was given (block_given? == false)'
+        # 'A &block was expected, but no block was given (block_given? == false)'
       end
     end
   end
