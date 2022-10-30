@@ -14,7 +14,12 @@ module Rcmdr
       def validate_verb!(verb)
         return if verb_valid? verb
 
-        raise "Invalid verb encountered: \"#{verb}\" (#{verb.class})"
+        expected_verbs = VERBS.to_sentence(
+          two_words_connector: ' or ',
+          last_word_connector: ' or ',
+        )
+        raise "Invalid verb. Expected \"#{expected_verbs}\", " \
+              "but received \"#{verb}\" (#{verb.class})."
       end
     end
   end

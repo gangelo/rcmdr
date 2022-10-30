@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/array/conversions'
 require_relative '../routing/options'
 
 module Rcmdr
@@ -26,8 +27,13 @@ module Rcmdr
         end
 
         if unrecognized_options.present?
-          raise 'One or more of the following optional options were not expected ' \
-                "\"#{unrecognized_options}\"."
+          expected_allowed_options = allowed_options.to_sentence(
+            two_words_connector: ' or ',
+            last_word_connector: ' or ',
+          )
+          unrecognized_options = unrecognized_options.to_sentence
+          raise "Invalid optional options. Expected \"#{expected_allowed_options}\", " \
+                "but received \"#{unrecognized_options}\"."
         end
       end
 
@@ -41,8 +47,13 @@ module Rcmdr
         missing_required_options = required_options - options
 
         if missing_required_options.present?
-          raise "One or more of the following required options were expected \"#{required_options}\", " \
-                "but \"#{missing_required_options}\" were missing."
+          expected_required_options = required_options.to_sentence(
+            two_words_connector: ' or ',
+            last_word_connector: ' or ',
+          )
+          missing_required_options = missing_required_options.to_sentence
+          raise "Missing required options. Expected \"#{expected_required_options}\", " \
+                "but \"#{missing_required_options}\" are missing."
         end
       end
     end

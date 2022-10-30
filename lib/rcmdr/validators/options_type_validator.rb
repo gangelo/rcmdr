@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/array/conversions'
+
 module Rcmdr
   module Validators
     module OptionsTypeValidator
@@ -13,8 +15,12 @@ module Rcmdr
 
         return if options_type_valid?(option, allowed_types:)
 
-        raise "Invalid option type. Expected \"#{allowed_types.join(' or ')}\", " \
-              "but received (#{option.class})"
+        expected_option_types = allowed_types.to_sentence(
+          two_words_connector: ' or ',
+          last_word_connector: ' or ',
+        )
+        raise "Invalid option type. Expected \"#{expected_option_types}\", " \
+              "but received \"#{option}\" (#{option.class})."
       end
     end
   end

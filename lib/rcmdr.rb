@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 # For #compact_blank
+# For #to_sentence
+require 'active_support/core_ext/array/conversions'
 require 'active_support/core_ext/enumerable'
 require 'active_support/core_ext/object/blank'
 require 'active_support/core_ext/module/delegation'

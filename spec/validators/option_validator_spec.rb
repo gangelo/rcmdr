@@ -37,8 +37,7 @@ RSpec.describe Rcmdr::Validators::OptionValidator do
       let(:options) { %i[one three] }
       let(:required_options) { %i[one two three four] }
       let(:expected_error) do
-        'One or more of the following required options were expected ' \
-          '"[:one, :two, :three, :four]", but "[:two, :four]" were missing.'
+        'Missing required options. Expected "one, two, three or four", but "two and four" are missing.'
       end
 
       it 'raises an error' do
@@ -65,7 +64,7 @@ RSpec.describe Rcmdr::Validators::OptionValidator do
       let(:options) { %i[zero five] }
       let(:allowed_options) { %i[one two three four] }
       let(:expected_error) do
-        'One or more of the following optional options were not expected "[:zero, :five]".'
+        'Invalid optional options. Expected "one, two, three or four", but received "zero and five".'
       end
 
       it 'raises an error' do

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/array/conversions'
+
 module Rcmdr
   module Validators
     module ControllerValidator

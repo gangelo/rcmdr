@@ -58,7 +58,7 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
         let(:resource) { :photos }
         let(:options) { { only: :wrong_type } }
         let(:expected_error) do
-          'Invalid option type. Expected "Array", but received (Symbol)'
+          'Invalid option type. Expected "Array", but received "wrong_type" (Symbol).'
         end
 
         it_behaves_like 'an error is raised'
@@ -68,7 +68,7 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
         let(:resource) { :photos }
         let(:options) { { unrecognized_option: :unrecognized } }
         let(:expected_error) do
-          'One or more of the following optional options were not expected "[:unrecognized_option]".'
+          'Invalid optional options. Expected "only or module", but received "unrecognized_option".'
         end
 
         it_behaves_like 'an error is raised'

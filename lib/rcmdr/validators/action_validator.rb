@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/array/conversions'
 require_relative '../routing/actions'
 
 module Rcmdr
@@ -24,7 +25,12 @@ module Rcmdr
       def validate_action!(action)
         return if action_valid? action
 
-        raise "Invalid action encountered: \"#{action}\" (#{action.class})."
+        expected_actions = ACTIONS.to_sentence(
+          two_words_connector: ' or ',
+          last_word_connector: ' or ',
+        )
+        raise "Invalid verb. Expected \"#{expected_actions}\", " \
+              "but received \"#{action}\" (#{action.class})."
       end
     end
   end

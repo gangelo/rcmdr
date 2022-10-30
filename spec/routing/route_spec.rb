@@ -24,7 +24,7 @@ RSpec.describe Rcmdr::Routing::Route do
       let(:path) { '/photos/list' }
       let(:options) { { verb: :get, bad_option: true } }
       let(:expected_error) do
-        'One or more of the following optional options were not expected "[:bad_option]".'
+        'Invalid optional options. Expected "action, as, mod, to or verb", but received "bad_option".'
       end
 
       it_behaves_like 'an error is raised'
