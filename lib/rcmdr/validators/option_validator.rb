@@ -29,7 +29,7 @@ module Rcmdr
         if unrecognized_options.present?
           expected_allowed_options = allowed_options.to_sentence(
             two_words_connector: ' or ',
-            last_word_connector: ' or ',
+            last_word_connector: ' or '
           )
           unrecognized_options = unrecognized_options.to_sentence
           raise "Invalid optional options. Expected \"#{expected_allowed_options}\", " \
@@ -49,7 +49,7 @@ module Rcmdr
         if missing_required_options.present?
           expected_required_options = required_options.to_sentence(
             two_words_connector: ' or ',
-            last_word_connector: ' or ',
+            last_word_connector: ' or '
           )
           missing_required_options = missing_required_options.to_sentence
           raise "Missing required options. Expected \"#{expected_required_options}\", " \

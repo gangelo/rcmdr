@@ -17,7 +17,7 @@ module Rcmdr
 
         expected_option_types = allowed_types.to_sentence(
           two_words_connector: ' or ',
-          last_word_connector: ' or ',
+          last_word_connector: ' or '
         )
         raise "Invalid option type. Expected \"#{expected_option_types}\", " \
               "but received \"#{option}\" (#{option.class})."

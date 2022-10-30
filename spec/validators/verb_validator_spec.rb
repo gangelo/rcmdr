@@ -47,7 +47,7 @@ RSpec.describe Rcmdr::Validators::VerbValidator do
       let(:verb) { :invalid_verb }
       let(:expected_error) do
         'Invalid verb. Expected "get, post, put, patch or delete", ' \
-        'but received "invalid_verb" (Symbol).'
+          'but received "invalid_verb" (Symbol).'
       end
 
       it_behaves_like 'an error is raised'

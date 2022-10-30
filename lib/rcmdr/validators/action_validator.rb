@@ -27,7 +27,7 @@ module Rcmdr
 
         expected_actions = ACTIONS.to_sentence(
           two_words_connector: ' or ',
-          last_word_connector: ' or ',
+          last_word_connector: ' or '
         )
         raise "Invalid verb. Expected \"#{expected_actions}\", " \
               "but received \"#{action}\" (#{action.class})."

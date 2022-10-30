@@ -16,7 +16,7 @@ module Rcmdr
       def validate_controller!(controller)
         return if valid_controller? controller
 
-        raise "Unable to determine controller from: \"#{controller}\". " \
+        raise "Invalid controller name. Unable to determine controller from \"#{controller}\". " \
               "\"#{controller}\" is not a supported controller name."
       end
     end

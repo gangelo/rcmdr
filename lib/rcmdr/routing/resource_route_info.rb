@@ -12,14 +12,17 @@ module Rcmdr
       attr_reader :resource, :verb, :action, :options
 
       def initialize(resource, verb:, action:, **options)
-        # TODO: Validate options
-
+        unless [String, Symbol].any? { |kind| resource.is_a?(kind) }
+          raise 'Resource is invalid. Expected String or Symbol, ' \
+                "but recieved \"#{resource}\" (#{resource.class})."
+        end
         resource = resource.to_sym
-        verb = verb.to_sym
-        action = action.to_sym
 
         validate_verb! verb
+        verb = verb.to_sym
+
         validate_action! action
+        action = action.to_sym
 
         @resource = resource
         @verb = verb
@@ -63,16 +66,7 @@ module Rcmdr
       alias path uri_pattern
 
       def controller_action
-        @controller_action ||= if %i[index create].include?(action)
-          "/#{resource_plural}"
-        elsif action == :new
-          "/#{resource_plural}/new"
-        elsif action == :edit
-          "/#{resource_plural}/:id/edit"
-        else
-          # action == :show, :update, :destroy
-          "/#{resource_plural}/:id"
-        end
+        @controller_action ||= "#{resource_plural}##{action}"
       end
     end
   end

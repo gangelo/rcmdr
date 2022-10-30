@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext/array/conversions'
 require_relative '../routing/verbs'
 
 module Rcmdr
@@ -16,7 +17,7 @@ module Rcmdr
 
         expected_verbs = VERBS.to_sentence(
           two_words_connector: ' or ',
-          last_word_connector: ' or ',
+          last_word_connector: ' or '
         )
         raise "Invalid verb. Expected \"#{expected_verbs}\", " \
               "but received \"#{verb}\" (#{verb.class})."
