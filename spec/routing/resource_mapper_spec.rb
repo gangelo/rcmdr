@@ -57,7 +57,9 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
       context 'when :only is the wrong type' do
         let(:resource) { :photos }
         let(:options) { { only: :wrong_type } }
-        let(:expected_error) { Rcmdr::Errors::OptionTypeError }
+        let(:expected_error) do
+          'Invalid option type. Expected "Array", but received (Symbol)'
+        end
 
         it_behaves_like 'an error is raised'
       end
@@ -65,7 +67,9 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
       context 'when an unrecognized option is passed' do
         let(:resource) { :photos }
         let(:options) { { unrecognized_option: :unrecognized } }
-        let(:expected_error) { Rcmdr::Errors::UnrecognizedOptionError }
+        let(:expected_error) do
+          'One or more of the following optional options were not expected "[:unrecognized_option]".'
+        end
 
         it_behaves_like 'an error is raised'
       end
@@ -74,7 +78,9 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
         context 'with a nil? resource' do
           let(:resource) { nil }
           let(:options) { {} }
-          let(:expected_error) { Rcmdr::Errors::InvalidResourceError }
+          let(:expected_error) do
+            'Resource "" (NilClass) is not present?'
+          end
 
           it_behaves_like 'an error is raised'
         end
@@ -82,7 +88,9 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
         context 'with a blank? resource' do
           let(:resource) { '' }
           let(:options) { {} }
-          let(:expected_error) { Rcmdr::Errors::InvalidResourceError }
+          let(:expected_error) do
+            'Resource "" (String) is not present?'
+          end
 
           it_behaves_like 'an error is raised'
         end

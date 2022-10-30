@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
+require_relative '../validators/option_validator'
 require_relative 'actions'
-require_relative 'resource'
+require_relative 'resource_mapper'
 require_relative 'route'
 require_relative 'verbs'
 
@@ -10,15 +11,15 @@ module Rcmdr
     # This class takes care of routing: mapping/storing routes
     # and creating/providing path and url helper methods.
     class Routes
+      include Rcmdr::Validators::OptionValidator
       include Actions
       include Verbs
 
-      # Hash:
-      # { <verb>: { route: "<route>", to: "<controller/action>" } }
       attr_reader :routes, :paths
 
       def initialize
         self.routes = VERBS.to_h { |verb| [verb, {}] }
+        routes[:root] = {}
         self.paths = {}
       end
 
@@ -37,69 +38,102 @@ module Rcmdr
       attr_writer :routes, :paths
 
       def resources(resource, only: ACTIONS)
-        raise "#{resource} is not a Symbol" unless resource.is_a? Symbol
-
-        only.each do |action|
-          verbs_for(action:).each do |verb|
-            resource_info = Resources.new(resource, action:, verb:).info
-            add_route(resource_info.path, to: resource_info.controller_action, verb:)
-            helper_path = resource_info.helper_path
-            next if helper_path.nil? || paths[helper_path].present?
-
-            paths[helper_path] = resource_info.path
+        ResourceMapper.map_resources(resource, only:).tap do |resources_maps|
+          resources_maps.each do |resources_map|
+            add_resource_route resources_map
+            add_resource_paths resources_map
           end
         end
       end
-      alias resource resources
 
-      def add_resource_path(route:, **options)
+      def resource(resource, only: ACTIONS - [:index])
+        ResourceMapper.map_resource(resource, only:).tap do |resource_maps|
+          resource_maps.each do |resource_map|
+            add_resource_route resource_map
+            add_resource_paths resource_map
+          end
+        end
       end
 
-      def root(route, **options)
-        get route, **options.merge({ to: :root })
+      def root(path, **options)
+        options[:to] = path if path
+        add_route('/', **options.merge!({ verb: :root }))
+        add_route_path(path: '/', **options)
       end
 
-      def delete(route, **options)
-        add_route(route, **options.merge({ verb: :delete }))
-        add_route_path(route:, as: options[:as])
+      def delete(path, **options)
+        add_route(path, **options.merge!({ verb: :delete }))
+        add_route_path(path:, **options)
       end
 
-      def get(route, **options)
-        add_route(route, **options.merge({ verb: :get }))
-        add_route_path(route:, as: options[:as])
+      def get(path, **options)
+        add_route(path, **options.merge!({ verb: :get }))
+        add_route_path(path:, **options)
       end
 
-      def post(route, **options)
-        add_route(route, **options.merge({ verb: :post }))
-        add_route_path(route:, as: options[:as])
+      def post(path, **options)
+        add_route(path, **options.merge!({ verb: :post }))
+        add_route_path(path:, **options)
       end
 
-      def patch(route, **options)
-        add_route(route, **options.merge({ verb: :patch }))
-        add_route_path(route:, as: options[:as])
+      def patch(path, **options)
+        add_route(path, **options.merge!({ verb: :patch }))
+        add_route_path(path:, **options)
       end
 
-      def put(route, **options)
-        add_route(route, **options.merge({ verb: :put }))
-        add_route_path(route:, as: options[:as])
+      def put(path, **options)
+        add_route(path, **options.merge!({ verb: :put }))
+        add_route_path(path:, **options)
       end
 
-      def add_route(route, **options)
-        missing_options = %i[verb] - options.keys
-        raise Errors::RequiredOptionsError.new(options: missing_options) unless missing_options.blank?
+      def add_route(path, **options)
+        validate_required_options!(options: options.keys, required_options: %i[verb to]) unless options.blank?
 
         verb = options[:verb]
-
-        routes[verb][route] = {}
-        routes[verb][route][:to] = options[:to]
-        routes[verb][route]
+        routes[verb][path] = {}
+        routes[verb][path][:to] = options[:to]
+        routes[verb][path]
       end
 
-      def add_route_path(route:, as:)
-        helper_path = Route.new(route, as:).helper_path
-        return if helper_path.nil? || paths[helper_path].present?
+      def add_route_path(path:, **options)
+        mapper = Route.new(path, **options)
 
-        paths[helper_path] = route
+        path = mapper.path
+
+        helper_path = mapper.helper_path
+        paths[helper_path] ||= {}
+        paths[helper_path] = path
+
+        helper_url = mapper.helper_url
+        paths[helper_url] ||= {}
+        paths[helper_url] = mapper.url_for(host: 'app', scheme: 'rcmdr', port: nil)
+      end
+
+      # Add routes for resources and resource from their
+      # respective mapper.
+      def add_resource_route(mapper)
+        verb = mapper.verb
+        path = mapper.path
+
+        routes[verb] ||= verb
+        routes[verb][path] ||= {}
+        routes[verb][path][:controller] = mapper.controller
+        routes[verb][path][:action] = mapper.action
+        routes[verb][path]
+      end
+
+      # Add paths and urls for resources and resource from their
+      # respective mapper.
+      def add_resource_paths(mapper)
+        path = mapper.path
+
+        helper_path = mapper.helper_path
+        paths[helper_path] ||= {}
+        paths[helper_path] = path
+
+        helper_url = mapper.helper_url
+        paths[helper_url] ||= {}
+        paths[helper_url] = mapper.url_for(host: 'app', scheme: 'rcmdr', port: nil)
       end
     end
   end

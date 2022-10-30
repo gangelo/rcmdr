@@ -2,8 +2,8 @@
 
 module Rcmdr
   module Routing
-    module Verbs
-      VERBS = %i[get post put patch delete].freeze
+    module Options
+      OPTIONS = %i[action as mod to verb].freeze
     end
   end
 end

@@ -18,73 +18,13 @@ RSpec.describe Rcmdr::Routing::Resources do
       end
 
       context 'when an invalid action is passed' do
-        let(:expected_error) { Rcmdr::Errors::InvalidActionError }
+        let(:expected_error) do
+          'Invalid action encountered: "unrecognized_action" (Symbol).'
+        end
 
         it 'raises an error' do
           expect { resources.verbs_for(action: :unrecognized_action) }.to raise_error expected_error
         end
-      end
-    end
-
-    describe '.resource_valid?' do
-      subject(:resources) { described_class.resource_valid? resource }
-
-      context 'when the resource is valid' do
-        let(:resource) { :photos }
-
-        it 'returns true' do
-          expect(resources).to be true
-        end
-      end
-
-      context 'when resource is invalid' do
-        context 'when nil' do
-          let(:resource) { nil }
-
-          it 'returns false' do
-            expect(resources).to be false
-          end
-        end
-
-        context 'when an empty String' do
-          let(:resource) { '' }
-
-          it 'returns false' do
-            expect(resources).to be false
-          end
-        end
-      end
-    end
-
-    describe '.validate_resource!' do
-      subject(:resources) { described_class.validate_resource! resource }
-
-      context 'when resource is blank?' do
-        context 'when nil' do
-          let(:resource) { nil }
-          let(:expected_error) { Rcmdr::Errors::InvalidResourceError }
-
-          it_behaves_like 'an error is raised'
-        end
-
-        context 'when an empty String' do
-          let(:resource) { '' }
-          let(:expected_error) { Rcmdr::Errors::InvalidResourceError }
-
-          it_behaves_like 'an error is raised'
-        end
-      end
-    end
-
-    describe '.validate_options!' do
-      subject(:resources) { described_class.validate_options! allowed_options:, options: }
-
-      context 'when options are not allowed' do
-        let(:allowed_options) { %i[a b c] }
-        let(:options) { %i[a b c x y z] }
-        let(:expected_error) { /"\[:x, :y, :z\]" were unrecognized/ }
-
-        it_behaves_like 'an error is raised'
       end
     end
   end
@@ -201,8 +141,8 @@ RSpec.describe Rcmdr::Routing::Resources do
       subject(:resources) { described_class.new(resource, verb: :put, action: :update) }
 
       it 'does something' do
-        expected_url = 'rcmdr://host:3000/path'
-        expect(resources.url_for(host: 'host', path: '/path', scheme: 'rcmdr', port: 3000)).to eq expected_url
+        expected_url = 'rcmdr://host:3000/photos/:id'
+        expect(resources.url_for(host: 'host', scheme: 'rcmdr', port: 3000)).to eq expected_url
       end
     end
   end
