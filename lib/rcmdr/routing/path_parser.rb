@@ -9,6 +9,8 @@ module Rcmdr
     module PathParser
       PATH_WITH_SLUG = /.*:.*/
 
+      module_function
+
       def path_parse!(path, **options)
         raise "Unable to determine controller action from path \"#{path}\"." if path.blank?
 
