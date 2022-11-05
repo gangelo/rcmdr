@@ -15,23 +15,38 @@ RSpec.describe Rcmdr::Routing::Routes do
       context 'when a &block is given' do
         subject(:routes) do
           described_class.new.draw do
-            get '/get', to: 'controller#index', as: :list
-            delete '/delete', to: 'controller#delete', as: :delete
-            patch '/put', to: 'controller#patch', as: :patch
-            post '/post', to: 'controller#post', as: :post
-            put '/put', to: 'controller#put', as: :put
+            get '/get', to: 'articles#index', as: :list
+            delete '/delete', to: 'articles#delete', as: :delete
+            patch '/put', to: 'articles#patch', as: :patch
+            post '/post', to: 'articles#post', as: :post
+            put '/put', to: 'articles#put', as: :put
           end
         end
 
         let(:expected_routes) do
           empty_verbs_hash.merge(
             {
-              root: {},
-              get: { '/get' => { to: 'controller#index' } },
-              delete: { '/delete' => { to: 'controller#delete' } },
-              patch: { '/put' => { to: 'controller#patch' } },
-              post: { '/post' => { to: 'controller#post' } },
-              put: { '/put' => { to: 'controller#put' } }
+              get: {
+                '/get' => {
+                  controller: 'ArticlesController', action: 'index'
+                }
+              }, post: {
+                '/post' => {
+                  controller: 'ArticlesController', action: 'post'
+                }
+              }, put: {
+                '/put' => {
+                  controller: 'ArticlesController', action: 'put'
+                }
+              }, patch: {
+                '/put' => {
+                  controller: 'ArticlesController', action: 'patch'
+                }
+              }, delete: {
+                '/delete' => {
+                  controller: 'ArticlesController', action: 'delete'
+                }
+              }, root: {}
             }
           )
         end
@@ -58,7 +73,8 @@ RSpec.describe Rcmdr::Routing::Routes do
               put: {},
               root: {
                 '/' => {
-                  to: 'home#index'
+                  action: 'index',
+                  controller: 'HomeController'
                 }
               }
             }

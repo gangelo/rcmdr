@@ -24,7 +24,7 @@ module Rcmdr
                   'to resolve this ambiguity.'
           end
 
-          # Check namespace (if it present) and controller
+          # Check namespace (if present) and controller
           Rcmdr::Validators::ControllerValidator.validate_controller! controller_segments
 
           controller_segments = controller_segments.split('/').compact_blank
@@ -49,9 +49,9 @@ module Rcmdr
                 'path controller_segments or supply to: "<controller>#<action>" to resolve this ambiguity.'
         end
 
-        controller = path_segments[0]
-        namespaces = path_segments[1..-2]
-        action = path_segments[-1]
+        action = path_segments.pop
+        controller = path_segments.pop
+        namespaces = path_segments
 
         [controller, namespaces, action]
       end

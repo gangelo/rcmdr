@@ -4,6 +4,7 @@ require_relative '../validators/option_validator'
 require_relative 'actions'
 require_relative 'resource_mapper'
 require_relative 'route'
+require_relative 'route_mapper'
 require_relative 'verbs'
 
 module Rcmdr
@@ -41,7 +42,7 @@ module Rcmdr
         ResourceMapper.map_resources(resource, only:).tap do |resources_maps|
           resources_maps.each do |resources_map|
             add_resource_route resources_map
-            add_resource_paths resources_map
+            add_resource_path resources_map
           end
         end
       end
@@ -50,63 +51,45 @@ module Rcmdr
         ResourceMapper.map_resource(resource, only:).tap do |resource_maps|
           resource_maps.each do |resource_map|
             add_resource_route resource_map
-            add_resource_paths resource_map
+            add_resource_path resource_map
           end
         end
       end
 
       def root(path, **options)
-        options[:to] = path if path
-        add_route('/', **options.merge!({ verb: :root }))
-        add_route_path(path: '/', **options)
+        route_map = RouteMapper.map_root path, **options
+        add_resource_route route_map
+        add_resource_path route_map
       end
 
       def delete(path, **options)
-        add_route(path, **options.merge!({ verb: :delete }))
-        add_route_path(path:, **options)
+        route_map = RouteMapper.map_route path, verb: :delete, **options
+        add_resource_route route_map
+        add_resource_path route_map
       end
 
       def get(path, **options)
-        add_route(path, **options.merge!({ verb: :get }))
-        add_route_path(path:, **options)
+        route_map = RouteMapper.map_route path, verb: :get, **options
+        add_resource_route route_map
+        add_resource_path route_map
       end
 
       def post(path, **options)
-        add_route(path, **options.merge!({ verb: :post }))
-        add_route_path(path:, **options)
+        route_map = RouteMapper.map_route path, verb: :post, **options
+        add_resource_route route_map
+        add_resource_path route_map
       end
 
       def patch(path, **options)
-        add_route(path, **options.merge!({ verb: :patch }))
-        add_route_path(path:, **options)
+        route_map = RouteMapper.map_route path, verb: :patch, **options
+        add_resource_route route_map
+        add_resource_path route_map
       end
 
       def put(path, **options)
-        add_route(path, **options.merge!({ verb: :put }))
-        add_route_path(path:, **options)
-      end
-
-      def add_route(path, **options)
-        validate_required_options!(options: options.keys, required_options: %i[verb to])
-
-        verb = options[:verb]
-        routes[verb][path] = {}
-        routes[verb][path][:to] = options[:to]
-        routes[verb][path]
-      end
-
-      def add_route_path(path:, **options)
-        mapper = Route.new(path, **options)
-
-        path = mapper.path
-
-        helper_path = mapper.helper_path
-        paths[helper_path] ||= {}
-        paths[helper_path] = path
-
-        helper_url = mapper.helper_url
-        paths[helper_url] ||= {}
-        paths[helper_url] = mapper.url_for(host: 'app', scheme: 'rcmdr', port: nil)
+        route_map = RouteMapper.map_route path, verb: :put, **options
+        add_resource_route route_map
+        add_resource_path route_map
       end
 
       # Add routes for resources and resource from their
@@ -124,7 +107,7 @@ module Rcmdr
 
       # Add paths and urls for resources and resource from their
       # respective mapper.
-      def add_resource_paths(mapper)
+      def add_resource_path(mapper)
         path = mapper.path
 
         helper_path = mapper.helper_path

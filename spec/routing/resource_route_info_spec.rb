@@ -148,7 +148,7 @@ RSpec.describe Rcmdr::Routing::ResourceRouteInfo do
               actions.all? do |action|
                 described_class.new(resource, verb:, action:, **options).prefix == 'article'
               end
-            ).to eq true
+            ).to be true
           end
         end
       end
@@ -160,7 +160,7 @@ RSpec.describe Rcmdr::Routing::ResourceRouteInfo do
           let(:action) { :index }
 
           it 'returns "/<pluralized uri pattern>"' do
-            expect(resource_route_info.uri_pattern).to eq  "/articles"
+            expect(resource_route_info.uri_pattern).to eq '/articles'
           end
         end
 
@@ -196,7 +196,7 @@ RSpec.describe Rcmdr::Routing::ResourceRouteInfo do
               actions.all? do |action|
                 described_class.new(resource, verb:, action:, **options).uri_pattern == '/articles/:id'
               end
-            ).to eq true
+            ).to be true
           end
         end
       end
@@ -209,7 +209,7 @@ RSpec.describe Rcmdr::Routing::ResourceRouteInfo do
             actions.all? do |action|
               described_class.new(resource, verb:, action:, **options).controller_action == "articles##{action}"
             end
-          ).to eq true
+          ).to be true
         end
       end
     end

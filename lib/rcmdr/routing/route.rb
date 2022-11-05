@@ -3,6 +3,7 @@
 require_relative '../validators/option_validator'
 require_relative '../validators/verb_validator'
 require_relative 'path_parser'
+require_relative 'root'
 require_relative 'verbs'
 
 module Rcmdr
@@ -11,9 +12,10 @@ module Rcmdr
       include Rcmdr::Validators::OptionValidator
       include Rcmdr::Validators::VerbValidator
       include PathParser
+      include Root
       include Verbs
 
-      attr_reader :path, :verb, :namespaces, :controller, :action, :to
+      attr_reader :action, :as, :controller, :namespaces, :path, :to, :verb
 
       def initialize(path, **options)
         validate_options!(options: options.keys)
@@ -23,20 +25,15 @@ module Rcmdr
         validate_required_options!(options: options.keys, required_options: [:verb])
 
         verb = options[:verb].to_sym
-        to = options[:to]
-
         validate_verb! verb unless verb == :root
 
         @controller, @namespaces, @action = path_parse! path, **options
-        @controller = "#{@controller.to_s.pluralize.camelize}Controller"
+        @controller = "#{@controller.to_s.camelize}Controller"
         @namespaces = @namespaces.map { |namespace| namespace.to_s.camelize }
         @path = path
         @verb = verb
-        @to = to
-      end
-
-      def root?
-        verb == :root
+        @to = options[:to]
+        @as = options[:as]
       end
 
       def print
@@ -77,9 +74,13 @@ module Rcmdr
       private
 
       def helper(type:)
-        path = self.path.to_s.split('/').compact_blank.join('_')
-
-        path = :root if root?
+        path = if as.present?
+          as
+        elsif root?
+          :root
+        else
+          self.path.to_s.split('/').compact_blank.join('_')
+        end
 
         "#{path}_#{type}"
       end
