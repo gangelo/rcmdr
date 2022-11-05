@@ -56,13 +56,13 @@ module Rcmdr
         end
       end
 
+      private
+
       def root_controller_action
         raise 'Route is not root' unless root?
 
         # If root, and both path and option :to are used, path wins out.
-        return path if to && path
-
-        to || path
+        path || to
       end
 
       def route_controller_action
