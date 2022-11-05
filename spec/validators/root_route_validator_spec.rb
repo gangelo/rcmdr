@@ -5,24 +5,24 @@ RSpec.describe Rcmdr::Validators::RootRouteValidator do
     context 'when the root controller action is valid' do
       it 'returns true' do
         expect(described_class.valid_root_controller_action?('controller#action'))
-          .to eq true
+          .to be true
         expect(described_class.valid_root_controller_action?('namespace/controller#action'))
-          .to eq true
+          .to be true
       end
     end
 
     context 'when the root controller action is invalid' do
       it 'returns false' do
         expect(described_class.valid_root_controller_action?(nil))
-          .to eq false
+          .to be false
         expect(described_class.valid_root_controller_action?(''))
-          .to eq false
+          .to be false
         expect(described_class.valid_root_controller_action?('/controller#action'))
-          .to eq false
+          .to be false
         expect(described_class.valid_root_controller_action?('controller#action#badaction'))
-          .to eq false
+          .to be false
         expect(described_class.valid_root_controller_action?('BADcontroller#action'))
-          .to eq false
+          .to be false
       end
     end
   end
