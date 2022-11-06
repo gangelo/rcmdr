@@ -24,16 +24,16 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
 
       context 'when arguments are valid' do
         let(:resource) { :photos }
-        let(:options) { { module: 'Admin' } }
+        let(:options) { { namespace: ['admin'] } }
         let(:expected_mappings) do
           [
-            'post /photos -> Admin::PhotosController#create',
-            'delete /photos -> Admin::PhotosController#destroy',
-            'get /photos/edit -> Admin::PhotosController#edit',
-            'get /photos/new -> Admin::PhotosController#new',
-            'get /photos -> Admin::PhotosController#show',
-            'put /photos -> Admin::PhotosController#update',
-            'patch /photos -> Admin::PhotosController#update'
+            'post /admin/photos -> Admin::PhotosController#create',
+            'delete /admin/photos -> Admin::PhotosController#destroy',
+            'get /admin/photos/edit -> Admin::PhotosController#edit',
+            'get /admin/photos/new -> Admin::PhotosController#new',
+            'get /admin/photos -> Admin::PhotosController#show',
+            'put /admin/photos -> Admin::PhotosController#update',
+            'patch /admin/photos -> Admin::PhotosController#update'
           ]
         end
 
@@ -68,7 +68,7 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
         let(:resource) { :photos }
         let(:options) { { unrecognized_option: :unrecognized } }
         let(:expected_error) do
-          'Invalid optional options. Expected "only or module", but received "unrecognized_option".'
+          'Invalid optional options. Expected "only, module or namespace", but received "unrecognized_option".'
         end
 
         it_behaves_like 'an error is raised'
@@ -98,17 +98,17 @@ RSpec.describe Rcmdr::Routing::ResourceMapper do
 
       context 'when arguments are valid' do
         let(:resource) { :photos }
-        let(:options) { { module: 'Admin' } }
+        let(:options) { { namespace: ['admin'] } }
         let(:expected_mappings) do
           [
-            'post /photos -> Admin::PhotosController#create',
-            'get /photos -> Admin::PhotosController#index',
-            'delete /photos/:id -> Admin::PhotosController#destroy',
-            'get /photos/:id/edit -> Admin::PhotosController#edit',
-            'get /photos/new -> Admin::PhotosController#new',
-            'get /photos/:id -> Admin::PhotosController#show',
-            'put /photos/:id -> Admin::PhotosController#update',
-            'patch /photos/:id -> Admin::PhotosController#update'
+            'post /admin/photos -> Admin::PhotosController#create',
+            'get /admin/photos -> Admin::PhotosController#index',
+            'delete /admin/photos/:id -> Admin::PhotosController#destroy',
+            'get /admin/photos/:id/edit -> Admin::PhotosController#edit',
+            'get /admin/photos/new -> Admin::PhotosController#new',
+            'get /admin/photos/:id -> Admin::PhotosController#show',
+            'put /admin/photos/:id -> Admin::PhotosController#update',
+            'patch /admin/photos/:id -> Admin::PhotosController#update'
           ]
         end
 

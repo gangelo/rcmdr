@@ -24,7 +24,7 @@ RSpec.describe Rcmdr::Routing::Route do
       let(:path) { '/photos/list' }
       let(:options) { { verb: :get, bad_option: true } }
       let(:expected_error) do
-        'Invalid optional options. Expected "action, as, mod, to or verb", but received "bad_option".'
+        'Invalid optional options. Expected "action, as, mod, namespace, to or verb", but received "bad_option".'
       end
 
       it_behaves_like 'an error is raised'
@@ -150,7 +150,6 @@ RSpec.describe Rcmdr::Routing::Route do
     end
   end
 
-  # url_for(host:, path:, scheme: 'rcmdr', port: nil)
   describe '#url_for' do
     subject(:url_for) do
       described_class.new(path, **options)

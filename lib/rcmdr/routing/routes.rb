@@ -16,9 +16,10 @@ module Rcmdr
       include Actions
       include Verbs
 
-      attr_reader :routes, :paths
+      attr_reader :routes, :paths, :options
 
-      def initialize
+      def initialize(**options)
+        self.options = options
         self.routes = VERBS.to_h { |verb| [verb, {}] }
         routes[:root] = {}
         self.paths = {}
@@ -36,10 +37,10 @@ module Rcmdr
 
       private
 
-      attr_writer :routes, :paths
+      attr_writer :routes, :paths, :options
 
-      def resources(resource, only: ACTIONS)
-        ResourceMapper.map_resources(resource, only:).tap do |resources_maps|
+      def resources(resource, only: ACTIONS, **options)
+        ResourceMapper.map_resources(resource, only:, **options.merge(self.options)).tap do |resources_maps|
           resources_maps.each do |resources_map|
             add_resource_route resources_map
             add_resource_path resources_map
@@ -53,6 +54,17 @@ module Rcmdr
             add_resource_route resource_map
             add_resource_path resource_map
           end
+        end
+      end
+
+      def namespace(namespace, &)
+        options[:namespace] = [] if options[:namespace].blank?
+        options[:namespace] << namespace
+
+        routes_obj = self.class.new(**options)
+        routes_obj.draw(&).tap do |routes|
+          paths.merge!(routes.paths)
+          self.routes.merge!(routes.routes)
         end
       end
 

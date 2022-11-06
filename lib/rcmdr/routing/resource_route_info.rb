@@ -40,33 +40,45 @@ module Rcmdr
 
       def prefix
         @prefix ||= if %i[index create].include?(action)
-          resource_plural
+          "#{prefix_namespace}#{resource_plural}"
         elsif action == :new
-          "new_#{resource_singular}"
+          "new_#{prefix_namespace}#{resource_singular}"
         elsif action == :edit
-          "edit_#{resource_singular}"
+          "edit_#{prefix_namespace}#{resource_singular}"
         else
           # action == :show, :update, :destroy
-          resource_singular
+          "#{prefix_namespace}#{resource_singular}"
         end
       end
 
       def uri_pattern
         @uri_pattern ||= if %i[index create].include?(action)
-          "/#{resource_plural}"
+          "/#{namespace}#{resource_plural}"
         elsif action == :new
-          "/#{resource_plural}/new"
+          "/#{namespace}#{resource_plural}/new"
         elsif action == :edit
-          "/#{resource_plural}/:id/edit"
+          "/#{namespace}#{resource_plural}/:id/edit"
         else
           # action == :show, :update, :destroy
-          "/#{resource_plural}/:id"
+          "/#{namespace}#{resource_plural}/:id"
         end
       end
       alias path uri_pattern
 
       def controller_action
-        @controller_action ||= "#{resource_plural}##{action}"
+        @controller_action ||= "#{namespace}#{resource_plural}##{action}"
+      end
+
+      def namespace
+        return if options[:namespace].blank?
+
+        @namespace ||= "#{options[:namespace].join('/')}/"
+      end
+
+      def prefix_namespace
+        return if options[:namespace].blank?
+
+        @prefix_namespace ||= namespace.gsub('/', '_')
       end
     end
   end

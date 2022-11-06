@@ -10,10 +10,24 @@ module Rcmdr
 
       def path
         @path ||= if %i[new edit].include?(action)
-          "/#{resource}/#{action}"
+          "/#{path_namespace}#{resource}/#{action}"
         else
-          "/#{resource}"
+          "/#{path_namespace}#{resource}"
         end
+      end
+
+      private
+
+      def path_namespace
+        return if options[:namespace].blank?
+
+        @path_namespace ||= "#{options[:namespace].join('/')}/"
+      end
+
+      def prefix_namespace
+        return if options[:namespace].blank?
+
+        @prefix_namespace ||= path_namespace.gsub('/', '_')
       end
     end
   end

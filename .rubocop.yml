@@ -11,7 +11,7 @@ AllCops:
     - 'init/*'
     - 'Rakefile'
 #    - '*.gemspec'
-#    - 'spec/**/*'
+    - 'spec/**/*'
     - 'vendor/**/*'
     - 'scratch*.rb'
     - 'snippets*.rb'

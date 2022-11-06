@@ -60,15 +60,14 @@ RSpec.describe Rcmdr::Routing::Resources do
     end
 
     describe '#to_h' do
-      let(:options) { { verb: :get, action: :index, mod: :admin } }
+      let(:options) { { verb: :get, action: :index, namespace: [:admin] } }
       let(:expected_hash) do
         {
           action: :index,
           controller: 'Admin::PhotosController',
-          helper_path: 'photos_path',
-          helper_url: 'photos_url',
-          mod: :admin,
-          path: '/photos',
+          helper_path: 'admin_photos_path',
+          helper_url: 'admin_photos_url',
+          path: '/admin/photos',
           resource: :photos
         }
       end
@@ -79,7 +78,7 @@ RSpec.describe Rcmdr::Routing::Resources do
     end
 
     describe '#controller' do
-      context 'with no module' do
+      context 'with no namespace' do
         let(:options) { { verb: :get, action: :index } }
 
         it 'returns the controller' do
@@ -87,8 +86,8 @@ RSpec.describe Rcmdr::Routing::Resources do
         end
       end
 
-      context 'with a module' do
-        let(:options) { { verb: :get, action: :index, mod: :admin } }
+      context 'with a namespace' do
+        let(:options) { { verb: :get, action: :index, namespace: [:admin] } }
 
         it 'returns the controller' do
           expect(resources.controller).to eq 'Admin::PhotosController'

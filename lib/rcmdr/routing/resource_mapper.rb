@@ -33,15 +33,16 @@ module Rcmdr
         def map(resource, resource_class:, **options)
           only = options[:only]
           mod = options[:module]
+          namespace = options[:namespace]
 
-          validate_options!(options: options.keys, allowed_options: %i[only module])
+          validate_options!(options: options.keys, allowed_options: %i[only module namespace])
           validate_options_type!(option: only, allowed_types: Array)
 
           resources = []
 
           only.each do |action|
             resource_class.verbs_for(action:).each do |verb|
-              resources << resource_class.new(resource, action:, verb:, mod:)
+              resources << resource_class.new(resource, action:, mod:, namespace:, verb:)
             end
           end
 

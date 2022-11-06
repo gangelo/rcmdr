@@ -2,6 +2,7 @@
 
 require 'uri'
 require_relative '../validators/action_validator'
+require_relative '../validators/controller_validator'
 require_relative '../validators/option_validator'
 require_relative '../validators/verb_validator'
 require_relative 'actions'
@@ -12,12 +13,13 @@ module Rcmdr
   module Routing
     class Resources
       include Rcmdr::Validators::ActionValidator
+      include Rcmdr::Validators::ControllerValidator
       include Rcmdr::Validators::OptionValidator
       include Rcmdr::Validators::VerbValidator
       include Actions
       include Verbs
 
-      attr_reader :resource, :action, :verb, :mod
+      attr_reader :resource, :action, :verb, :mod, :options
 
       delegate :path, :resource_plural, :resource_singular, to: :resource_route_info
 
@@ -40,7 +42,7 @@ module Rcmdr
       def initialize(resource, **options)
         raise "Resource \"#{resource}\" (#{resource.class}) is not present?" unless resource.present?
 
-        validate_options!(options: options.keys, allowed_options: %i[action mod verb])
+        validate_options!(options: options.keys, allowed_options: %i[action mod namespace verb])
         validate_required_options!(options: options.keys, required_options: %i[action verb])
 
         action = options[:action]
@@ -54,8 +56,11 @@ module Rcmdr
         @action = action
         @verb = verb
         @mod = mod
+        @options = options.dup
 
         @resource_route_info = ResourceRouteInfo.new(resource, verb:, action:, **options)
+
+        validate_controller! "#{path_namespace}#{resource_plural}"
       end
 
       def print
@@ -67,7 +72,6 @@ module Rcmdr
           resource:,
           action:,
           controller:,
-          mod:,
           path:,
           helper_path:,
           helper_url:
@@ -75,7 +79,7 @@ module Rcmdr
       end
 
       def controller
-        @controller ||= "#{module_formatted}#{resource_plural.capitalize}Controller"
+        @controller ||= "#{controller_namespace}#{resource_plural.capitalize}Controller"
       end
 
       def helper_path
@@ -95,8 +99,18 @@ module Rcmdr
 
       attr_accessor :resource_route_info
 
-      def module_formatted
-        @module_formatted ||= "#{mod.to_s.capitalize}::" if mod.present?
+      def controller_namespace
+        return if options[:namespace].blank?
+
+        @controller_namespace ||= options[:namespace].map do |namespace|
+          "#{namespace.to_s.capitalize}::"
+        end.join
+      end
+
+      def path_namespace
+        return if options[:namespace].blank?
+
+        @path_namespace ||= "#{options[:namespace].join('/')}/"
       end
     end
   end
