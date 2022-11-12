@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'activesupport', '~> 7.0', '>= 7.0.4'
-  spec.add_dependency 'deco_lite', '~> 1.0'
+  spec.add_dependency 'immutable_struct_ex', '~> 1.0'
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 end

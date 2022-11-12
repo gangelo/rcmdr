@@ -9,6 +9,8 @@ require 'active_support/core_ext/module/delegation'
 # For #singularize and #pluralize
 require 'active_support/core_ext/string/inflections'
 
+require 'immutable_struct_ex'
+
 # 3rd-party
 require_relative 'rcmdr/3rd-party/URI/rcmdr'
 
@@ -18,6 +20,7 @@ require_relative 'rcmdr/errors/no_class_name_error'
 
 # Routing
 require_relative 'rcmdr/routing/actions'
+require_relative 'rcmdr/routing/namespaces'
 require_relative 'rcmdr/routing/options'
 require_relative 'rcmdr/routing/resource'
 require_relative 'rcmdr/routing/resource_route_info'

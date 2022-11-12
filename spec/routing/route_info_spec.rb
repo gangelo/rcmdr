@@ -62,7 +62,7 @@ RSpec.describe Rcmdr::Routing::RouteInfo do
         let(:options) { { invalid_option: :invalid_option_value } }
 
         let(:expected_error) do
-          'Invalid optional options. Expected "as or to", but received "invalid_option".'
+          'Invalid optional options. Expected "as, namespace or to", but received "invalid_option".'
         end
 
         it_behaves_like 'an error is raised'
@@ -93,6 +93,16 @@ RSpec.describe Rcmdr::Routing::RouteInfo do
 
         it 'returns the correct prefix' do
           expect(prefix).to eq 'home'
+        end
+      end
+
+      context 'when option :namespace is used' do
+        let(:path) { 'home#index' }
+        let(:verb) { :root }
+        let(:options) { { namespace: [:admin] } }
+
+        it 'returns the correct prefix' do
+          expect(prefix).to eq 'admin_root'
         end
       end
     end
@@ -169,6 +179,28 @@ RSpec.describe Rcmdr::Routing::RouteInfo do
       end
     end
 
+    context 'when root with option :namespace' do
+      context 'when option :to is not used' do
+        let(:path) { 'home#index' }
+        let(:verb) { :root }
+        let(:options) { { namespace: [:admin] } }
+
+        it 'returns the namespace/path#action' do
+          expect(controller_action).to eq 'admin/home#index'
+        end
+      end
+
+      context 'when option :to is used' do
+        let(:path) { 'home#index' }
+        let(:verb) { :root }
+        let(:options) { { to: 'ignored/home#index',  namespace: [:admin] } }
+
+        it 'returns namespace/path#action (option :to is ignored)' do
+          expect(controller_action).to eq 'admin/home#index'
+        end
+      end
+    end
+
     context 'when not root without inline namespaces' do
       context 'when option :to is not used' do
         let(:path) { '/admin/users' }
@@ -204,6 +236,28 @@ RSpec.describe Rcmdr::Routing::RouteInfo do
 
       context 'when option :to is used' do
         let(:path) { '/super_users/users' }
+        let(:verb) { :get }
+        let(:options) { { to: 'admin/supers/users#list' } }
+
+        it 'returns path <namespace>/[<namespace>/..]<controller>#<action> (option :to is used)' do
+          expect(controller_action).to eq 'admin/supers/users#list'
+        end
+      end
+    end
+
+    context 'when not root with option :namespace' do
+      context 'when option :to is not used' do
+        let(:path) { '/home/index' }
+        let(:verb) { :get }
+        let(:options) { { namespace: [:admin] } }
+
+        it 'returns <namespace>/[<namespace>/..]<controller>#<action>' do
+          expect(controller_action).to eq 'admin/home#index'
+        end
+      end
+
+      context 'when option :to is used' do
+        let(:path) { '/home/index' }
         let(:verb) { :get }
         let(:options) { { to: 'admin/supers/users#list' } }
 

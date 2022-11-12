@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../validators/option_validator'
-require_relative '../validators/options_type_validator'
 require_relative 'actions'
 require_relative 'resource'
 require_relative 'resources'
@@ -10,8 +8,6 @@ require_relative 'verbs'
 module Rcmdr
   module Routing
     class ResourceMapper
-      extend Rcmdr::Validators::OptionValidator
-      extend Rcmdr::Validators::OptionsTypeValidator
       extend Actions
       extend Verbs
 
@@ -31,18 +27,13 @@ module Rcmdr
         private
 
         def map(resource, resource_class:, **options)
-          only = options[:only]
-          mod = options[:module]
-          namespace = options[:namespace]
-
-          validate_options!(options: options.keys, allowed_options: %i[only module namespace])
-          validate_options_type!(option: only, allowed_types: Array)
+          raise "options[:only] is not an Array (#{options[:only].class})" unless options[:only].is_a?(Array)
 
           resources = []
 
-          only.each do |action|
+          options[:only].each do |action|
             resource_class.verbs_for(action:).each do |verb|
-              resources << resource_class.new(resource, action:, mod:, namespace:, verb:)
+              resources << resource_class.new(resource, verb:, action:, **options)
             end
           end
 

@@ -18,8 +18,7 @@ RSpec.describe Rcmdr::Routing::Resource do
 
       context 'when an invalid action is passed' do
         let(:expected_error) do
-          'Invalid verb. Expected "create, destroy, edit, index, new, show or update", ' \
-            'but received "unrecognized_action" (Symbol).'
+          'Invalid action: "unrecognized_action"'
         end
 
         it 'raises an error' do
@@ -36,8 +35,6 @@ RSpec.describe Rcmdr::Routing::Resource do
     let(:options) { {} }
 
     describe '#print' do
-      let(:options) { { verb: :get, action: :index } }
-
       it 'prints the mapping' do
         expect(described_class.new(resource, verb: :post, action: :create).print).to \
           eq 'post /photos -> PhotosController#create'

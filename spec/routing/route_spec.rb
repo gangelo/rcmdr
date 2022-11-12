@@ -24,7 +24,7 @@ RSpec.describe Rcmdr::Routing::Route do
       let(:path) { '/photos/list' }
       let(:options) { { verb: :get, bad_option: true } }
       let(:expected_error) do
-        'Invalid optional options. Expected "action, as, mod, namespace, to or verb", but received "bad_option".'
+        'Invalid optional options. Expected "as, namespace or to", but received "bad_option".'
       end
 
       it_behaves_like 'an error is raised'
@@ -33,7 +33,7 @@ RSpec.describe Rcmdr::Routing::Route do
     context 'when path is nil?' do
       let(:path) { nil }
       let(:options) { { verb: :delete } }
-      let(:expected_error) { 'Unable to determine controller action from path "".' }
+      let(:expected_error) { /Path is invalid\. Expected a non-blank\? String/ }
 
       it_behaves_like 'an error is raised'
     end
@@ -41,7 +41,7 @@ RSpec.describe Rcmdr::Routing::Route do
     context 'when path is an empty String' do
       let(:path) { '' }
       let(:options) { { verb: :patch } }
-      let(:expected_error) { 'Unable to determine controller action from path "".' }
+      let(:expected_error) { /Path is invalid\. Expected a non-blank\? String/ }
 
       it_behaves_like 'an error is raised'
     end
@@ -115,10 +115,8 @@ RSpec.describe Rcmdr::Routing::Route do
     let(:expected_hash) do
       {
         verb: :get,
-        namespaces: ['Admin'],
-        controller: 'UsersController',
+        controller: 'Admin::UsersController',
         action: 'index',
-        controller_class: 'Admin::UsersController',
         path: '/admin_users',
         helper_path: 'admin_users_path',
         helper_url: 'admin_users_url'
@@ -183,27 +181,51 @@ RSpec.describe Rcmdr::Routing::Route do
       it 'returns the expected route object' do
         expect(route.path).to eq path
         expect(route.verb).to eq :get
-        expect(route.namespaces).to eq []
         expect(route.controller).to eq 'ArticlesController'
-        expect(route.controller_class).to eq 'ArticlesController'
         expect(route.action).to eq 'index'
         expect(route.helper_path).to eq 'articles_index_path'
         expect(route.helper_url).to eq 'articles_index_url'
       end
 
-      context 'with namespaces' do
+      context 'with a namespace' do
         let(:path) { '/admin_users' }
         let(:options) { { verb: :get, to: 'admin/users#index' } }
 
         it 'returns the expected route object' do
           expect(route.path).to eq path
           expect(route.verb).to eq :get
-          expect(route.namespaces).to eq %w[Admin]
-          expect(route.controller).to eq 'UsersController'
-          expect(route.controller_class).to eq 'Admin::UsersController'
+          expect(route.controller).to eq 'Admin::UsersController'
           expect(route.action).to eq 'index'
           expect(route.helper_path).to eq 'admin_users_path'
           expect(route.helper_url).to eq 'admin_users_url'
+        end
+      end
+
+      context 'with multiple namespaces' do
+        let(:path) { '/admin_users/index' }
+        let(:options) { { verb: :get, namespace: %w[ns1 ns2] } }
+
+        it 'returns the expected route object' do
+          expect(route.path).to eq '/admin_users/index'
+          expect(route.verb).to eq :get
+          expect(route.controller).to eq 'Ns1::Ns2::AdminUsersController'
+          expect(route.action).to eq 'index'
+          expect(route.helper_path).to eq 'ns1_ns2_admin_users_index_path'
+          expect(route.helper_url).to eq 'ns1_ns2_admin_users_index_url'
+        end
+      end
+
+      context 'with multiple namespaces and to: option' do
+        let(:path) { '/admin_users' }
+        let(:options) { { verb: :get, namespace: %w[ns1 ns2], to: 'admin/users#index' } }
+
+        it 'returns the expected route object' do
+          expect(route.path).to eq '/admin_users'
+          expect(route.verb).to eq :get
+          expect(route.controller).to eq 'Ns1::Ns2::Admin::UsersController'
+          expect(route.action).to eq 'index'
+          expect(route.helper_path).to eq 'ns1_ns2_admin_users_path'
+          expect(route.helper_url).to eq 'ns1_ns2_admin_users_url'
         end
       end
     end

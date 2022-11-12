@@ -19,7 +19,7 @@ module Rcmdr
           return false
         end
 
-        controller, action = controller_action_parts
+        controller, _action = controller_action_parts
         ControllerValidator.valid_controller?(controller)
       end
 

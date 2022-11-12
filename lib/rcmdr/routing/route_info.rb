@@ -5,6 +5,7 @@ require_relative '../validators/option_validator'
 require_relative '../validators/root_route_validator'
 require_relative '../validators/verb_validator'
 require_relative 'path_parser'
+require_relative 'namespaces'
 require_relative 'root'
 
 module Rcmdr
@@ -15,6 +16,7 @@ module Rcmdr
       include Rcmdr::Validators::RootRouteValidator
       include Rcmdr::Validators::VerbValidator
       include PathParser
+      include Namespaces
       include Root
 
       attr_reader :path, :verb, :options, :to, :as
@@ -31,7 +33,7 @@ module Rcmdr
         @verb = verb.to_sym
         validate_verb! verb unless root?
 
-        validate_options!(options: options.keys, allowed_options: %i[as to])
+        validate_options!(options: options.keys, allowed_options: %i[as namespace to])
 
         @options = options
         @to = options[:to]
@@ -42,9 +44,9 @@ module Rcmdr
 
       def prefix
         @prefix ||= if root?
-          as || 'root'
+          "#{prefix_namespace}#{as || 'root'}"
         else
-          as || path.split('/').compact_blank.join('_')
+          as || "#{prefix_namespace}#{path.split('/').compact_blank.join('_')}"
         end
       end
 
@@ -62,17 +64,15 @@ module Rcmdr
         raise 'Route is not root' unless root?
 
         # If root, and both path and option :to are used, path wins out.
-        path || to
+        return "#{path_namespace}#{path}" if path
+
+        to
       end
 
       def route_controller_action
         controller, namespaces, action = path_parse!(path, **options)
 
         [namespaces, "#{controller}##{action}"].flatten.join('/')
-      end
-
-      def namespaces
-        'TODO: return namespaces'
       end
     end
   end

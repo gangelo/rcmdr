@@ -2,12 +2,14 @@
 
 require_relative '../validators/action_validator'
 require_relative '../validators/verb_validator'
+require_relative 'namespaces'
 
 module Rcmdr
   module Routing
     class ResourceRouteInfo
       include Rcmdr::Validators::ActionValidator
       include Rcmdr::Validators::VerbValidator
+      include Namespaces
 
       attr_reader :resource, :verb, :action, :options
 
@@ -53,32 +55,20 @@ module Rcmdr
 
       def uri_pattern
         @uri_pattern ||= if %i[index create].include?(action)
-          "/#{namespace}#{resource_plural}"
+          "/#{path_namespace}#{resource_plural}"
         elsif action == :new
-          "/#{namespace}#{resource_plural}/new"
+          "/#{path_namespace}#{resource_plural}/new"
         elsif action == :edit
-          "/#{namespace}#{resource_plural}/:id/edit"
+          "/#{path_namespace}#{resource_plural}/:id/edit"
         else
           # action == :show, :update, :destroy
-          "/#{namespace}#{resource_plural}/:id"
+          "/#{path_namespace}#{resource_plural}/:id"
         end
       end
       alias path uri_pattern
 
       def controller_action
-        @controller_action ||= "#{namespace}#{resource_plural}##{action}"
-      end
-
-      def namespace
-        return if options[:namespace].blank?
-
-        @namespace ||= "#{options[:namespace].join('/')}/"
-      end
-
-      def prefix_namespace
-        return if options[:namespace].blank?
-
-        @prefix_namespace ||= namespace.gsub('/', '_')
+        @controller_action ||= "#{path_namespace}#{resource_plural}##{action}"
       end
     end
   end

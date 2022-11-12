@@ -1,32 +1,26 @@
 # frozen_string_literal: true
 
 require 'uri'
-require_relative '../validators/action_validator'
 require_relative '../validators/controller_validator'
-require_relative '../validators/option_validator'
-require_relative '../validators/verb_validator'
 require_relative 'actions'
 require_relative 'resource_route_info'
+require_relative 'namespaces'
 require_relative 'verbs'
 
 module Rcmdr
   module Routing
     class Resources
-      include Rcmdr::Validators::ActionValidator
       include Rcmdr::Validators::ControllerValidator
-      include Rcmdr::Validators::OptionValidator
-      include Rcmdr::Validators::VerbValidator
       include Actions
+      include Namespaces
       include Verbs
 
-      attr_reader :resource, :action, :verb, :mod, :options
+      attr_reader :action, :resource, :verb
 
       delegate :path, :resource_plural, :resource_singular, to: :resource_route_info
 
       class << self
         def verbs_for(action:)
-          Rcmdr::Validators::ActionValidator.validate_action! action
-
           if action == :create
             [:post]
           elsif action == :destroy
@@ -35,6 +29,8 @@ module Rcmdr
             %i[put patch]
           elsif %i[edit index new show].include?(action)
             [:get]
+          else
+            raise "Invalid action: \"#{action}\""
           end
         end
       end
@@ -42,22 +38,11 @@ module Rcmdr
       def initialize(resource, **options)
         raise "Resource \"#{resource}\" (#{resource.class}) is not present?" unless resource.present?
 
-        validate_options!(options: options.keys, allowed_options: %i[action mod namespace verb])
-        validate_required_options!(options: options.keys, required_options: %i[action verb])
-
-        action = options[:action]
-        verb = options[:verb]
-        mod = options[:mod]
-
-        validate_verb! verb
-        validate_action! action
-
-        @resource = resource
-        @action = action
-        @verb = verb
-        @mod = mod
         @options = options.dup
-
+        @action = options[:action]
+        @verb = options[:verb]
+        @to = options[:to]
+        @resource = resource
         @resource_route_info = ResourceRouteInfo.new(resource, verb:, action:, **options)
 
         validate_controller! "#{path_namespace}#{resource_plural}"
@@ -97,21 +82,7 @@ module Rcmdr
 
       private
 
-      attr_accessor :resource_route_info
-
-      def controller_namespace
-        return if options[:namespace].blank?
-
-        @controller_namespace ||= options[:namespace].map do |namespace|
-          "#{namespace.to_s.capitalize}::"
-        end.join
-      end
-
-      def path_namespace
-        return if options[:namespace].blank?
-
-        @path_namespace ||= "#{options[:namespace].join('/')}/"
-      end
+      attr_accessor :options, :resource_route_info, :to
     end
   end
 end

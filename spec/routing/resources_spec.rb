@@ -19,8 +19,7 @@ RSpec.describe Rcmdr::Routing::Resources do
 
       context 'when an invalid action is passed' do
         let(:expected_error) do
-          'Invalid verb. Expected "create, destroy, edit, index, new, show or update", ' \
-            'but received "unrecognized_action" (Symbol).'
+          'Invalid action: "unrecognized_action"'
         end
 
         it 'raises an error' do

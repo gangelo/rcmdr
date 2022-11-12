@@ -18,23 +18,7 @@ module Rcmdr
         # of namespaces to apply to: path, options[:to] and affect
         # helper path and url generated (unless option[:as] specified)
         to = options[:to]
-        if to.present?
-          controller_segments, action = to.split('#').compact_blank
-          if action.nil?
-            raise "Unable to determine controller action from to: \"#{to}\". " \
-                  'You must add an action (e.g. to:[<namespace>/...]<controller>#<action>) ' \
-                  'to resolve this ambiguity.'
-          end
-
-          # Check namespace (if present) and controller
-          Rcmdr::Validators::ControllerValidator.validate_controller! controller_segments
-
-          controller_segments = controller_segments.split('/').compact_blank
-          controller = controller_segments.pop
-          namespaces = controller_segments
-
-          return [controller, namespaces, action]
-        end
+        return parse_to(to) if to.present?
 
         if PATH_WITH_SLUG.match? path
           raise "Unable to determine controller action from path \"#{path}\". " \
@@ -53,7 +37,38 @@ module Rcmdr
 
         action = path_segments.pop
         controller = path_segments.pop
-        namespaces = path_segments
+        namespaces = path_segments || []
+        namespaces = concat_namespaces_if namespaces, options[:namespace]
+
+        [controller, namespaces, action]
+      end
+
+      def concat_namespaces_if(path_namespaces, options_namespace)
+        return path_namespaces if options_namespace.blank?
+
+        # There could be namespacing in the path itself, and used
+        # in our routing (i.e. namespace :namespace do...end); this
+        # makes sure all the namespaces are accounted for.
+        options_namespace.flatten + path_namespaces
+      end
+
+      private
+
+      def parse_to(to)
+        controller_segments, action = to.split('#').compact_blank
+        if action.nil?
+          raise "Unable to determine controller action from to: \"#{to}\". " \
+                'You must add an action (e.g. to:[<namespace>/...]<controller>#<action>) ' \
+                'to resolve this ambiguity.'
+        end
+
+        # Check namespace (if present) and controller
+        Rcmdr::Validators::ControllerValidator.validate_controller! controller_segments
+
+        controller_segments = controller_segments.split('/').compact_blank
+        controller = controller_segments.pop
+        namespaces = controller_segments || []
+        namespaces = concat_namespaces_if namespaces, options[:namespace]
 
         [controller, namespaces, action]
       end

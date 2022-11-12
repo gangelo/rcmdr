@@ -40,7 +40,8 @@ module Rcmdr
       attr_writer :routes, :paths, :options
 
       def resources(resource, only: ACTIONS, **options)
-        ResourceMapper.map_resources(resource, only:, **options.merge(self.options)).tap do |resources_maps|
+        options = options.merge(self.options)
+        ResourceMapper.map_resources(resource, only:, **options).tap do |resources_maps|
           resources_maps.each do |resources_map|
             add_resource_route resources_map
             add_resource_path resources_map
@@ -48,8 +49,9 @@ module Rcmdr
         end
       end
 
-      def resource(resource, only: ACTIONS - [:index])
-        ResourceMapper.map_resource(resource, only:).tap do |resource_maps|
+      def resource(resource, only: ACTIONS - [:index], **options)
+        options = options.merge(self.options)
+        ResourceMapper.map_resource(resource, only:, **options).tap do |resource_maps|
           resource_maps.each do |resource_map|
             add_resource_route resource_map
             add_resource_path resource_map
@@ -69,36 +71,42 @@ module Rcmdr
       end
 
       def root(path, **options)
+        options = options.merge(self.options)
         route_map = RouteMapper.map_root path, **options
         add_resource_route route_map
         add_resource_path route_map
       end
 
-      def delete(path, **options)
-        route_map = RouteMapper.map_route path, verb: :delete, **options
-        add_resource_route route_map
-        add_resource_path route_map
-      end
-
       def get(path, **options)
+        options = options.merge(self.options)
         route_map = RouteMapper.map_route path, verb: :get, **options
         add_resource_route route_map
         add_resource_path route_map
       end
 
-      def post(path, **options)
-        route_map = RouteMapper.map_route path, verb: :post, **options
+      def delete(path, **options)
+        options = options.merge(self.options)
+        route_map = RouteMapper.map_route path, verb: :delete, **options
         add_resource_route route_map
         add_resource_path route_map
       end
 
       def patch(path, **options)
+        options = options.merge(self.options)
         route_map = RouteMapper.map_route path, verb: :patch, **options
         add_resource_route route_map
         add_resource_path route_map
       end
 
+      def post(path, **options)
+        options = options.merge(self.options)
+        route_map = RouteMapper.map_route path, verb: :post, **options
+        add_resource_route route_map
+        add_resource_path route_map
+      end
+
       def put(path, **options)
+        options = options.merge(self.options)
         route_map = RouteMapper.map_route path, verb: :put, **options
         add_resource_route route_map
         add_resource_path route_map
