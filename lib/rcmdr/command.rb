@@ -100,7 +100,7 @@ module Rcmdr
         end
 
         def help
-          commands.each do |_command, command_data|
+          commands.each_value do |command_data|
             puts "#{command_namespaces.join(' ')} #{command_data[:help]}"
           end
         end

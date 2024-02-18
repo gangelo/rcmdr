@@ -5,7 +5,7 @@ module Rcmdr
     private
 
     # rubocop:disable Lint/UnusedMethodArgument
-    def command_help_for(command:, desc:, namespaces: nil, long_desc: nil, options: {}, commands: [])
+    def command_help_for(command:, desc:, namespaces: nil, long_desc: nil, options: {}, commands: []) # rubocop:disable Metrics/ParameterLists
       namespaces ||= command_namespaces
       help =
         <<~HELP
