@@ -16,7 +16,7 @@ end
 
 group :test do
   gem 'rspec', '~> 3.0'
-  gem 'simplecov', '~> 0.21.2'
+  gem 'simplecov', '~> 0.22.0'
 end
 
 group :development, :test do
